@@ -3,7 +3,7 @@
 #include <pluginlib/class_list_macros.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Vector3.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToDynamicObstacles, costmap_converter::BaseCostmapToPolygons)
 
@@ -26,7 +26,7 @@ CostmapToDynamicObstacles::~CostmapToDynamicObstacles()
 void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
 {
   BaseCostmapToPolygons::initialize(nh);
-  
+
   costmap_ = nullptr;
 
   // We need the odometry from the robot to compensate the ego motion
