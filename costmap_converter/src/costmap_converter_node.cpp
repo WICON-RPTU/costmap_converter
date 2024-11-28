@@ -53,8 +53,20 @@ class CostmapStandaloneConversion : public rclcpp::Node {
       : rclcpp::Node(node_name),
         converter_loader_("costmap_converter",
                           "costmap_converter::BaseCostmapToPolygons") {
-    costmap_ros_ =
-        std::make_shared<nav2_costmap_2d::Costmap2DROS>("converter_costmap");
+
+
+
+    // creates the node, that creates a costmap.
+    // I want to replace this with a subsciption to an existing local_costmap
+    // Problem: Can I create an additional costmap or specify which layer of the costmap should be used?
+    // Normally the costmap-nodes are not launched individually, but within e.g. planner_node. Still the parameters from the yaml file and remapping of the namespace are applied somehow. (Getting a similar behavior for this standalone-node would be great.)
+    // Alternative 1: I need to have the possibility to define parameters of this automatically executed costmap-node
+    // Alternative 2: I do it like teb_local_planner and don't use this node. The controller-plugin should already have access to the the local_costmap.
+
+    // costmap_ros_ =
+    //     std::make_shared<nav2_costmap_2d::Costmap2DROS>("converter_costmap");
+    costmap_ros_ = std::make_shared<nav2_costmap_2d::Costmap2DROS>(
+    "converter_costmap", std::string{get_namespace()}, "converter_costmap"); // see line 64, 65 from https://github.com/ros-navigation/navigation2/blob/humble/nav2_planner/src/planner_server.cpp 
     costmap_thread_ = std::make_unique<std::thread>(
         [](rclcpp_lifecycle::LifecycleNode::SharedPtr node) {
           rclcpp::spin(node->get_node_base_interface());
@@ -63,6 +75,9 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     rclcpp_lifecycle::State state;
     costmap_ros_->on_configure(state);
     costmap_ros_->on_activate(state);
+
+
+
 
     n_ = std::shared_ptr<rclcpp::Node>(this, [](rclcpp::Node *) {});
     // load converter plugin from parameter server, otherwise set default
