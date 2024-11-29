@@ -78,10 +78,13 @@ class CostmapStandaloneConversion : public rclcpp::Node {
 
 
 
-
+    // create shared pointer to this node (no clue why he didn't just use "this" instead of "n_")
     n_ = std::shared_ptr<rclcpp::Node>(this, [](rclcpp::Node *) {});
-    // load converter plugin from parameter server, otherwise set default
 
+
+
+    // create converter_
+    // load converter plugin from parameter server, otherwise set default
     std::string converter_plugin =
         "costmap_converter::CostmapToPolygonsDBSMCCH";
 
@@ -104,6 +107,9 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     RCLCPP_INFO(get_logger(), "Standalone costmap converter: %s loaded.",
                 converter_plugin.c_str());
 
+
+
+    // create publisher
     std::string obstacles_topic = "costmap_obstacles";
     declare_parameter("obstacles_topic",
                       rclcpp::ParameterValue(obstacles_topic));
@@ -122,6 +128,9 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     marker_pub_ = create_publisher<visualization_msgs::msg::Marker>(
         polygon_marker_topic, 10);
 
+
+
+    // read further parameter
     occupied_min_value_ = 100;
     declare_parameter("occupied_min_value",
                       rclcpp::ParameterValue(occupied_min_value_));
@@ -132,6 +141,9 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     declare_parameter("odom_topic", rclcpp::ParameterValue(odom_topic));
     get_parameter_or<std::string>("odom_topic", odom_topic, odom_topic);
 
+
+
+    // initialize and start converter and create "intra_node"
     if (converter_) {
       converter_->setOdomTopic(odom_topic);
       converter_->initialize(
@@ -140,6 +152,7 @@ class CostmapStandaloneConversion : public rclcpp::Node {
                               costmap_ros_->getCostmap(), true);
     }
 
+    // create timer for publishing results
     pub_timer_ = n_->create_wall_timer(
         std::chrono::milliseconds(200),
         std::bind(&CostmapStandaloneConversion::publishCallback, this));
