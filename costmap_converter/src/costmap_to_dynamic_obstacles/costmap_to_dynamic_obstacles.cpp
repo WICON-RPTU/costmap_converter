@@ -137,10 +137,8 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
 
   ////////////////////////////////////
   // Static costmap conversion parameters
-  std::string static_converter_plugin = "costmap_converter::CostmapToDynamicObstacles";
-  RCLCPP_INFO(getLogger(), "Before get_parameter_or: static_converter_plugin is -> %s", static_converter_plugin.c_str());
+  std::string static_converter_plugin = "costmap_converter::CostmapToPolygonsDBSMCCH";
   nh->get_parameter_or<std::string>("static_converter_plugin", static_converter_plugin, static_converter_plugin);
-  RCLCPP_INFO(getLogger(), "After get_parameter_or: static_converter_plugin is -> %s", static_converter_plugin.c_str());
   loadStaticCostmapConverterPlugin(static_converter_plugin, nh);
 
 

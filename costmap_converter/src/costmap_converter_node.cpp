@@ -86,7 +86,7 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     // create converter_
     // load converter plugin from parameter server, otherwise set default
     std::string converter_plugin =
-        "costmap_converter::CostmapToDynamicObstacles";
+        "costmap_converter::CostmapToPolygonsDBSMCCH";
 
     declare_parameter("converter_plugin",
                       rclcpp::ParameterValue(converter_plugin));
@@ -122,14 +122,11 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     get_parameter_or<std::string>("polygon_marker_topic", polygon_marker_topic,
                                   polygon_marker_topic);
 
-
     obstacle_pub_ =
         create_publisher<costmap_converter_msgs::msg::ObstacleArrayMsg>(
             obstacles_topic, 1000);
-    RCLCPP_INFO(get_logger(), "im under the Obstacle_pub");
     marker_pub_ = create_publisher<visualization_msgs::msg::Marker>(
         polygon_marker_topic, 10);
-    RCLCPP_INFO(get_logger(), "im under the marker_pub");
 
 
 
@@ -146,58 +143,37 @@ class CostmapStandaloneConversion : public rclcpp::Node {
 
 
 
-    // initialize and start converter and create "intra_node
-    RCLCPP_INFO(get_logger(), "about to start intra node");
+    // initialize and start converter and create "intra_node"
     if (converter_) {
-        RCLCPP_INFO(get_logger(), "Attempting to load static obstacle plugin...");
-        converter_->setOdomTopic(odom_topic);
-        try {
-            converter_->initialize(
-                std::make_shared<rclcpp::Node>("intra_node", "costmap_converter"));
-            RCLCPP_INFO(get_logger(), "Static obstacle plugin loaded successfully.");
-        } catch (const std::exception &e) {
-            RCLCPP_ERROR(get_logger(), "Failed to load static obstacle plugin: %s", e.what());
-        }
-        converter_->startWorker(std::make_shared<rclcpp::Rate>(5),
-                                costmap_ros_->getCostmap(), true);
+      converter_->setOdomTopic(odom_topic);
+      converter_->initialize(
+          std::make_shared<rclcpp::Node>("intra_node", "costmap_converter"));
+      converter_->startWorker(std::make_shared<rclcpp::Rate>(5),
+                              costmap_ros_->getCostmap(), true);
     }
+
     // create timer for publishing results
-    RCLCPP_INFO(get_logger(), "creating timer");
     pub_timer_ = n_->create_wall_timer(
         std::chrono::milliseconds(200),
         std::bind(&CostmapStandaloneConversion::publishCallback, this));
   }
 
   void publishCallback() {
-    RCLCPP_INFO(get_logger(), "publish_callback");
-    if (!converter_) {
-      RCLCPP_ERROR(get_logger(), "Converter object is null. Cannot get obstacles.");
-      return;
-}
     costmap_converter::ObstacleArrayConstPtr obstacles =
         converter_->getObstacles();
-    RCLCPP_INFO(get_logger(), "inside publish_callback declared variable");
 
-    if (!obstacles) {
-        RCLCPP_WARN(get_logger(), "Obstacles pointer is null.");
-        return;
-    }
+    if (!obstacles) return;
 
     obstacle_pub_->publish(*obstacles);
-    RCLCPP_INFO(get_logger(), "obstacle_pub");
 
     frame_id_ = costmap_ros_->getGlobalFrameID();
 
-
     publishAsMarker(frame_id_, *obstacles);
-    RCLCPP_INFO(get_logger(), "Publishing obstacles in Gloabal Frame ID: %s loaded.",
-                frame_id_.c_str());
   }
 
   void publishAsMarker(
       const std::string &frame_id,
       const std::vector<geometry_msgs::msg::PolygonStamped> &polygonStamped) {
-    RCLCPP_INFO(get_logger(), "Inside publish marker");
     visualization_msgs::msg::Marker line_list;
     line_list.header.frame_id = frame_id;
     line_list.header.stamp = now();
@@ -245,7 +221,6 @@ class CostmapStandaloneConversion : public rclcpp::Node {
   void publishAsMarker(
       const std::string &frame_id,
       const costmap_converter_msgs::msg::ObstacleArrayMsg &obstacles) {
-    RCLCPP_INFO(get_logger(), "Inside publish marker2");
     visualization_msgs::msg::Marker line_list;
     line_list.header.frame_id = frame_id;
     line_list.header.stamp = now();

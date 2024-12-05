@@ -84,6 +84,13 @@ install(DIRECTORY include/
    DESTINATION include/
 )
 
+# Install required directories (e.g. launch, config)
+install(DIRECTORY 
+  config
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_export_include_directories(include)
 ament_export_libraries(costmap_converter)
 ament_export_dependencies(${dependencies})
