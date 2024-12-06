@@ -2,9 +2,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
-from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription
+from launch.actions import SetEnvironmentVariable
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -16,7 +14,6 @@ def generate_launch_description():
 
     # Load all parameters
     standalone_converter_config = os.path.join(costmap_converter_share, 'config', 'standalone_converter.yaml')
-
     set_env_variable_model_name_cmd = SetEnvironmentVariable(name='TURTLEBOT3_MODEL', value='waffle')
     set_env_variable_path_cmd = SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value='$GAZEBO_MODEL_PATH:/opt/ros/humble/share/turtlebot3_gazebo/models')
     
