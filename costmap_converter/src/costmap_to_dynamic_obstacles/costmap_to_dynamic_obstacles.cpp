@@ -381,7 +381,7 @@ Point_t CostmapToDynamicObstacles::getEstimatedVelocityOfObject(unsigned int idx
   // vel [px/s] * costmapResolution [m/px] = vel [m/s]
   Point_t vel = tracker_->tracks.at(idx)->getEstimatedVelocity() * costmap_->getResolution() + ego_vel_;
 
-  //ROS_INFO("vel x: %f, vel y: %f, vel z: %f", vel.x, vel.y, vel.z);
+  // RCLCPP_INFO(getLogger(), "Estimated Tracked Object vel x: %f, vel y: %f, vel z: %f", vel.x, vel.y, vel.z);
   // velocity in /map frame
   return vel;
 }
@@ -405,6 +405,8 @@ void CostmapToDynamicObstacles::odomCallback(const nav_msgs::msg::Odometry::Cons
   ego_vel_.x = vel.x();
   ego_vel_.y = vel.y();
   ego_vel_.z = vel.z();
+
+  // RCLCPP_INFO(getLogger(), "vel x: %f, vel y: %f, vel z: %f", ego_vel_.x, ego_vel_.y, ego_vel_.z);
 }
 
 //void CostmapToDynamicObstacles::reconfigureCB(CostmapToDynamicObstaclesConfig& config, uint32_t level)
