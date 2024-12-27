@@ -45,16 +45,16 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   bg_sub_params.alpha_slow = 0.3;
   nh->get_parameter_or<double>("alpha_slow", bg_sub_params.alpha_slow, bg_sub_params.alpha_slow);
 
-  bg_sub_params.alpha_fast = 0.85;
+  bg_sub_params.alpha_fast = 0.9;
   nh->get_parameter_or<double>("alpha_fast", bg_sub_params.alpha_fast, bg_sub_params.alpha_fast);
 
-  bg_sub_params.beta = 0.85;
+  bg_sub_params.beta = 0.9;
   nh->get_parameter_or<double>("beta", bg_sub_params.beta, bg_sub_params.beta);
 
   bg_sub_params.min_occupancy_probability = 180;
   nh->get_parameter_or<double>("min_occupancy_probability", bg_sub_params.min_occupancy_probability, bg_sub_params.min_occupancy_probability);
 
-  bg_sub_params.min_sep_between_fast_and_slow_filter = 80;
+  bg_sub_params.min_sep_between_fast_and_slow_filter = 100;
   nh->get_parameter_or<double>("min_sep_between_slow_and_fast_filter", bg_sub_params.min_sep_between_fast_and_slow_filter, bg_sub_params.min_sep_between_fast_and_slow_filter);
 
   bg_sub_params.max_occupancy_neighbors = 100;
@@ -82,7 +82,7 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   blob_det_params.filterByArea = true;
   nh->get_parameter_or<bool>("filter_by_area", blob_det_params.filterByArea, blob_det_params.filterByArea);
 
-  blob_det_params.minArea = 3; // Filter out blobs with less pixels
+  blob_det_params.minArea = 30; // Filter out blobs with less pixels
   nh->get_parameter_or<float>("min_area", blob_det_params.minArea, blob_det_params.minArea);
 
   blob_det_params.maxArea = 300;
@@ -91,7 +91,7 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   blob_det_params.filterByCircularity = true; // circularity = 4*pi*area/perimeter^2
   nh->get_parameter_or<bool>("filter_by_circularity", blob_det_params.filterByCircularity, blob_det_params.filterByCircularity);
 
-  blob_det_params.minCircularity = 0.2;
+  blob_det_params.minCircularity = 0.5;
   nh->get_parameter_or<float>("min_circularity", blob_det_params.minCircularity, blob_det_params.minCircularity);
 
   blob_det_params.maxCircularity = 1; // maximal 1 (in case of a circle)
@@ -100,7 +100,7 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   blob_det_params.filterByInertia = true; // Filter blobs based on their elongation
   nh->get_parameter_or<bool>("filter_by_intertia", blob_det_params.filterByInertia, blob_det_params.filterByInertia);
 
-  blob_det_params.minInertiaRatio = 0.2;  // minimal 0 (in case of a line)
+  blob_det_params.minInertiaRatio = 0.5;  // minimal 0 (in case of a line)
   nh->get_parameter_or<float>("min_inertia_ratio", blob_det_params.minInertiaRatio, blob_det_params.minInertiaRatio);
 
   blob_det_params.maxInertiaRatio = 1;    // maximal 1 (in case of a circle)
@@ -123,13 +123,13 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   tracker_params.dt = 0.2;
   nh->get_parameter_or<float>("dt", tracker_params.dt, tracker_params.dt);
 
-  tracker_params.dist_thresh = 60.0;
+  tracker_params.dist_thresh = 10.0;
   nh->get_parameter_or<float>("dist_thresh", tracker_params.dist_thresh, tracker_params.dist_thresh);
 
   tracker_params.max_allowed_skipped_frames = 3;
   nh->get_parameter_or<int>("max_allowed_skipped_frames", tracker_params.max_allowed_skipped_frames, tracker_params.max_allowed_skipped_frames);
 
-  tracker_params.max_trace_length = 10;
+  tracker_params.max_trace_length = 5;
   nh->get_parameter_or<int>("max_trace_length", tracker_params.max_trace_length, tracker_params.max_trace_length);
 
   tracker_ = std::unique_ptr<CTracker>(new CTracker(tracker_params));
@@ -238,6 +238,7 @@ void CostmapToDynamicObstacles::compute()
 
     // Set obstacle ID
     obstacles->obstacles.back().id = tracker_->tracks.at(i)->track_id;
+    RCLCPP_WARN(getLogger(), "Estimated Tracked Object ID: %ld", tracker_->tracks.at(i)->track_id);
 
     // Set orientation
     geometry_msgs::msg::QuaternionStamped orientation;
@@ -381,7 +382,9 @@ Point_t CostmapToDynamicObstacles::getEstimatedVelocityOfObject(unsigned int idx
   // vel [px/s] * costmapResolution [m/px] = vel [m/s]
   Point_t vel = tracker_->tracks.at(idx)->getEstimatedVelocity() * costmap_->getResolution() + ego_vel_;
 
-  // RCLCPP_INFO(getLogger(), "Estimated Tracked Object vel x: %f, vel y: %f, vel z: %f", vel.x, vel.y, vel.z);
+  RCLCPP_WARN(getLogger(), "Estimated Tracked Object vel x: %f, vel y: %f, vel z: %f", vel.x, vel.y, vel.z);
+
+
   // velocity in /map frame
   return vel;
 }
