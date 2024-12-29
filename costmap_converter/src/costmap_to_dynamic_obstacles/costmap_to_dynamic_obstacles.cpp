@@ -262,12 +262,12 @@ void CostmapToDynamicObstacles::compute()
     velocities.twist.angular.z = 0;
 
     // TODO: use correct covariance matrix
-    velocities.covariance = {1, 0, 0, 0, 0, 0,
-                             0, 1, 0, 0, 0, 0,
-                             0, 0, 1, 0, 0, 0,
-                             0, 0, 0, 1, 0, 0,
-                             0, 0, 0, 0, 1, 0,
-                             0, 0, 0, 0, 0, 1};
+    velocities.covariance = {1e-5, 0, 0, 0, 0, 0,
+                             0, 1e-5, 0, 0, 0, 0,
+                             0, 0, 1e-5, 0, 0, 0,
+                             0, 0, 0, 1e-5, 0, 0,
+                             0, 0, 0, 0, 1e-5, 0,
+                             0, 0, 0, 0, 0, 1e-5};
 
     obstacles->obstacles.back().velocities = velocities;
   }
