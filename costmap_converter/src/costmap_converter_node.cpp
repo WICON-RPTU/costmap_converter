@@ -86,7 +86,7 @@ class CostmapStandaloneConversion : public rclcpp::Node {
     // create converter_
     // load converter plugin from parameter server, otherwise set default
     std::string converter_plugin =
-        "costmap_converter::CostmapToPolygonsDBSMCCH";
+        "costmap_converter::CostmapToDynamicObstacles";
 
     declare_parameter("converter_plugin",
                       rclcpp::ParameterValue(converter_plugin));

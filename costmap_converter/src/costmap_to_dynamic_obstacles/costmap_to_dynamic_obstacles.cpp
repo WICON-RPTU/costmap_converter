@@ -51,10 +51,10 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   bg_sub_params.beta = 0.9;
   nh->get_parameter_or<double>("beta", bg_sub_params.beta, bg_sub_params.beta);
 
-  bg_sub_params.min_occupancy_probability = 180;
+  bg_sub_params.min_occupancy_probability = 200;
   nh->get_parameter_or<double>("min_occupancy_probability", bg_sub_params.min_occupancy_probability, bg_sub_params.min_occupancy_probability);
 
-  bg_sub_params.min_sep_between_fast_and_slow_filter = 100;
+  bg_sub_params.min_sep_between_fast_and_slow_filter = 80;
   nh->get_parameter_or<double>("min_sep_between_slow_and_fast_filter", bg_sub_params.min_sep_between_fast_and_slow_filter, bg_sub_params.min_sep_between_fast_and_slow_filter);
 
   bg_sub_params.max_occupancy_neighbors = 100;
@@ -82,7 +82,7 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   blob_det_params.filterByArea = true;
   nh->get_parameter_or<bool>("filter_by_area", blob_det_params.filterByArea, blob_det_params.filterByArea);
 
-  blob_det_params.minArea = 30; // Filter out blobs with less pixels
+  blob_det_params.minArea = 3; // Filter out blobs with less pixels
   nh->get_parameter_or<float>("min_area", blob_det_params.minArea, blob_det_params.minArea);
 
   blob_det_params.maxArea = 300;
@@ -91,7 +91,7 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   blob_det_params.filterByCircularity = true; // circularity = 4*pi*area/perimeter^2
   nh->get_parameter_or<bool>("filter_by_circularity", blob_det_params.filterByCircularity, blob_det_params.filterByCircularity);
 
-  blob_det_params.minCircularity = 0.5;
+  blob_det_params.minCircularity = 0.2;
   nh->get_parameter_or<float>("min_circularity", blob_det_params.minCircularity, blob_det_params.minCircularity);
 
   blob_det_params.maxCircularity = 1; // maximal 1 (in case of a circle)
@@ -100,7 +100,7 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   blob_det_params.filterByInertia = true; // Filter blobs based on their elongation
   nh->get_parameter_or<bool>("filter_by_intertia", blob_det_params.filterByInertia, blob_det_params.filterByInertia);
 
-  blob_det_params.minInertiaRatio = 0.5;  // minimal 0 (in case of a line)
+  blob_det_params.minInertiaRatio = 0.2;  // minimal 0 (in case of a line)
   nh->get_parameter_or<float>("min_inertia_ratio", blob_det_params.minInertiaRatio, blob_det_params.minInertiaRatio);
 
   blob_det_params.maxInertiaRatio = 1;    // maximal 1 (in case of a circle)
@@ -120,16 +120,16 @@ void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
   ////////////////////////////////////
   // Tracking parameters
   CTracker::Params tracker_params;
-  tracker_params.dt = 0.2;
+  tracker_params.dt = 0.1;
   nh->get_parameter_or<float>("dt", tracker_params.dt, tracker_params.dt);
 
-  tracker_params.dist_thresh = 10.0;
+  tracker_params.dist_thresh = 15.0;
   nh->get_parameter_or<float>("dist_thresh", tracker_params.dist_thresh, tracker_params.dist_thresh);
 
   tracker_params.max_allowed_skipped_frames = 3;
   nh->get_parameter_or<int>("max_allowed_skipped_frames", tracker_params.max_allowed_skipped_frames, tracker_params.max_allowed_skipped_frames);
 
-  tracker_params.max_trace_length = 5;
+  tracker_params.max_trace_length = 10;
   nh->get_parameter_or<int>("max_trace_length", tracker_params.max_trace_length, tracker_params.max_trace_length);
 
   tracker_ = std::unique_ptr<CTracker>(new CTracker(tracker_params));
@@ -409,7 +409,7 @@ void CostmapToDynamicObstacles::odomCallback(const nav_msgs::msg::Odometry::Cons
   ego_vel_.y = vel.y();
   ego_vel_.z = vel.z();
 
-  // RCLCPP_INFO(getLogger(), "vel x: %f, vel y: %f, vel z: %f", ego_vel_.x, ego_vel_.y, ego_vel_.z);
+  // RCLCPP_WARN(getLogger(), "vel x: %f, vel y: %f, vel z: %f", ego_vel_.x, ego_vel_.y, ego_vel_.z);
 }
 
 //void CostmapToDynamicObstacles::reconfigureCB(CostmapToDynamicObstaclesConfig& config, uint32_t level)
