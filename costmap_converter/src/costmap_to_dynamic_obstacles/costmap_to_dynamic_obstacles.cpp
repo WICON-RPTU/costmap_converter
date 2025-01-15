@@ -35,7 +35,6 @@ namespace costmap_converter
         odom_topic_,
         rclcpp::SystemDefaultsQoS(),
         std::bind(&CostmapToDynamicObstacles::odomCallback, this, std::placeholders::_1));
-    
     nh->declare_parameter("dynamic_obstacle_plugin.publish_static_obstacles", rclcpp::ParameterValue(true));
     nh->get_parameter("dynamic_obstacle_plugin.publish_static_obstacles", publish_static_obstacles_);
 
@@ -54,7 +53,7 @@ namespace costmap_converter
 
     // bg_sub_params.min_occupancy_probability = 200;
     // nh->get_parameter_or<double>("min_occupancy_probability", bg_sub_params.min_occupancy_probability, bg_sub_params.min_occupancy_probability);
-    
+
     // bg_sub_params.min_sep_between_fast_and_slow_filter = 80;
     // nh->get_parameter_or<double>("min_sep_between_fast_and_slow_filter", bg_sub_params.min_sep_between_fast_and_slow_filter, bg_sub_params.min_sep_between_fast_and_slow_filter);
 
@@ -63,7 +62,7 @@ namespace costmap_converter
 
     // bg_sub_params.morph_size = 1;
     // nh->get_parameter_or<int>("morph_size", bg_sub_params.morph_size, bg_sub_params.morph_size);
-    
+
     nh->declare_parameter("bg_sub_params.alpha_slow", rclcpp::ParameterValue(0.3));
     nh->get_parameter("bg_sub_params.alpha_slow", bg_sub_params.alpha_slow);
 
@@ -75,17 +74,15 @@ namespace costmap_converter
 
     nh->declare_parameter("bg_sub_params.min_occupancy_probability", rclcpp::ParameterValue(200.0));
     nh->get_parameter("bg_sub_params.min_occupancy_probability", bg_sub_params.min_occupancy_probability);
-    
+
     nh->declare_parameter("bg_sub_params.min_sep_between_fast_and_slow_filter", rclcpp::ParameterValue(80.0));
     nh->get_parameter("bg_sub_params.min_sep_between_fast_and_slow_filter", bg_sub_params.min_sep_between_fast_and_slow_filter);
-    
+
     nh->declare_parameter("bg_sub_params.max_occupancy_neighbors", rclcpp::ParameterValue(100.0));
     nh->get_parameter("bg_sub_params.max_occupancy_neighbors", bg_sub_params.max_occupancy_neighbors);
-    
+
     nh->declare_parameter("bg_sub_params.morph_size", rclcpp::ParameterValue(1));
     nh->get_parameter("bg_sub_params.morph_size", bg_sub_params.morph_size);
-    
-
 
     bg_sub_ = std::unique_ptr<BackgroundSubtractor>(new BackgroundSubtractor(bg_sub_params));
 
@@ -196,8 +193,6 @@ namespace costmap_converter
     nh->declare_parameter("blob_det_params.max_convexity", rclcpp::ParameterValue(1.0)); // Maximal 1
     nh->get_parameter("blob_det_params.max_convexity", blob_det_params.maxConvexity);
 
-
-
     blob_det_ = BlobDetector::create(blob_det_params);
 
     ////////////////////////////////////
@@ -227,7 +222,6 @@ namespace costmap_converter
     nh->declare_parameter("tracker_params.max_trace_length", rclcpp::ParameterValue(10));
     nh->get_parameter("tracker_params.max_trace_length", tracker_params.max_trace_length);
 
-
     tracker_ = std::unique_ptr<CTracker>(new CTracker(tracker_params));
 
     ////////////////////////////////////
@@ -238,10 +232,398 @@ namespace costmap_converter
     nh->get_parameter("dynamic_obstacle_plugin.static_converter_plugin", static_converter_plugin);
     loadStaticCostmapConverterPlugin(static_converter_plugin, nh);
 
+
     // setup dynamic reconfigure
+    callback_handle = nh->add_on_set_parameters_callback(std::bind(&CostmapToDynamicObstacles::parameters_callback, this, std::placeholders::_1));
+
     //  dynamic_recfg_ = new dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>(nh);
     //  dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>::CallbackType cb = boost::bind(&CostmapToDynamicObstacles::reconfigureCB, this, _1, _2);
     //  dynamic_recfg_->setCallback(cb);
+  }
+
+  rcl_interfaces::msg::SetParametersResult CostmapToDynamicObstacles::parameters_callback(const std::vector<rclcpp::Parameter> &parameters)
+  {
+    rcl_interfaces::msg::SetParametersResult result;
+    result.successful = true;
+    result.reason = "";
+    bool update_bg_sub = false;
+    bool update_blob_det = false;
+    bool update_tracker = false; // Flag to decide if `updateParameters` should be called
+    // Set class attributes
+    for (const rclcpp::Parameter &parameter : parameters)
+    {
+      if (parameter.get_name() == "dynamic_obstacle_plugin.static_converter_plugin")
+      {
+        result.successful = false;
+        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "dynamic_obstacle_plugin.publish_static_obstacles")
+      {
+        result.successful = false;
+        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+
+      // Static Layer Parameter
+      else if (parameter.get_name() == "PolygonDBSMCCH.cluster_max_distance")
+      {
+        result.successful = false;
+        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "PolygonDBSMCCH.cluster_max_pts")
+      {
+        result.successful = false;
+        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "PolygonDBSMCCH.cluster_min_pts")
+      {
+        result.successful = false;
+        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "PolygonDBSMCCH.convex_hull_min_pt_separation")
+      {
+        result.successful = false;
+        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+
+      // Background Subtractor Parameters
+      else if (parameter.get_name() == "bg_sub_params.alpha_slow")
+      {
+        this->bg_sub_params.alpha_slow = parameter.as_double();
+        update_bg_sub = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "bg_sub_params.alpha_fast")
+      {
+        this->bg_sub_params.alpha_fast = parameter.as_double();
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "bg_sub_params.beta")
+      {
+        this->bg_sub_params.beta = parameter.as_double();
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "bg_sub_params.min_sep_between_fast_and_slow_filter")
+      {
+        this->bg_sub_params.min_sep_between_fast_and_slow_filter = parameter.as_double();
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "bg_sub_params.min_occupancy_probability")
+      {
+        this->bg_sub_params.min_occupancy_probability = parameter.as_double();
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "bg_sub_params.max_occupancy_neighbors")
+      {
+        this->bg_sub_params.max_occupancy_neighbors = parameter.as_double();
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "bg_sub_params.morph_size")
+      {
+        this->bg_sub_params.morph_size = parameter.as_int();
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+
+      // Blob Detector Parameters
+      else if (parameter.get_name() == "blob_det_params.filter_by_color")
+      {
+        this->blob_det_params.filterByColor = parameter.as_bool();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.blob_color")
+      {
+        this->blob_det_params.blobColor = parameter.as_int();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.threshold_step")
+      {
+        this->blob_det_params.thresholdStep = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_threshold")
+      {
+        this->blob_det_params.minThreshold = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.max_threshold")
+      {
+        this->blob_det_params.maxThreshold = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_repeatability")
+      {
+        this->blob_det_params.minRepeatability = parameter.as_int();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_distance_between_blobs")
+      {
+        this->blob_det_params.minDistBetweenBlobs = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.filter_by_area")
+      {
+        this->blob_det_params.filterByArea = parameter.as_bool();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_area")
+      {
+        this->blob_det_params.minArea = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.max_area")
+      {
+        this->blob_det_params.maxArea = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.filter_by_circularity")
+      {
+        this->blob_det_params.filterByCircularity = parameter.as_bool();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_circularity")
+      {
+        this->blob_det_params.minCircularity = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.max_circularity")
+      {
+        this->blob_det_params.maxCircularity = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.filter_by_convexity")
+      {
+        this->blob_det_params.filterByConvexity = parameter.as_bool();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_convexity")
+      {
+        this->blob_det_params.minConvexity = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.max_convexity")
+      {
+        this->blob_det_params.maxConvexity = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.filter_by_inertia")
+      {
+        this->blob_det_params.filterByInertia = parameter.as_bool();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.min_inertia_ratio")
+      {
+        this->blob_det_params.minInertiaRatio = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "blob_det_params.max_inertia_ratio")
+      {
+        this->blob_det_params.maxInertiaRatio = parameter.as_double();
+        update_blob_det = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+
+      // Tracker Parameters
+      else if (parameter.get_name() == "tracker_params.dt")
+      {
+        this->tracker_params.dt = parameter.as_double();
+        update_tracker = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "tracker_params.dist_thresh")
+      {
+        this->tracker_params.dist_thresh = parameter.as_double();
+        update_tracker = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "tracker_params.max_allowed_skipped_frames")
+      {
+        this->tracker_params.max_allowed_skipped_frames = parameter.as_int();
+        update_tracker = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+      else if (parameter.get_name() == "tracker_params.max_trace_length")
+      {
+        this->tracker_params.max_trace_length = parameter.as_int();
+        update_tracker = true;
+        std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
+        RCLCPP_INFO(this->getLogger(), success_message.c_str());
+        result.reason = result.reason + std::string("\n") + success_message;
+      }
+
+      else
+      { // should never happen, because ROS catches non-declared parameters
+        result.successful = false;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change was not successful. It is either not implemented or the parameter does not exist.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
+      }
+    }
+    // Update BackgroundSubtractor if parameters changed
+    if (update_bg_sub)
+    {
+      BackgroundSubtractor::Params bg_params;
+      bg_params.alpha_slow = this->bg_sub_params.alpha_slow;
+      bg_params.alpha_fast = this->bg_sub_params.alpha_fast;
+      bg_params.beta = this->bg_sub_params.beta;
+      bg_params.min_sep_between_fast_and_slow_filter = this->bg_sub_params.min_sep_between_fast_and_slow_filter;
+      bg_params.min_occupancy_probability = this->bg_sub_params.min_occupancy_probability;
+      bg_params.max_occupancy_neighbors = this->bg_sub_params.max_occupancy_neighbors;
+      bg_params.morph_size = this->bg_sub_params.morph_size;
+      this->bg_sub_->updateParameters(bg_params);
+      RCLCPP_INFO(this->getLogger(), "BackgroundSubtractor parameters updated.");
+    }
+
+    // // Update BlobDetector if parameters changed
+    // if (update_blob_det)
+    // {
+    //   cv::SimpleBlobDetector::Params blob_params;
+    //   blob_params.filterByColor = blob_det_params.filterByColor;
+    //   blob_params.blobColor = blob_det_params.blobColor;
+    //   blob_params.thresholdStep = blob_det_params.thresholdStep;
+    //   blob_params.minThreshold = blob_det_params.minThreshold;
+    //   blob_params.maxThreshold = blob_det_params.maxThreshold;
+    //   blob_params.minRepeatability = blob_det_params.minRepeatability;
+    //   blob_params.minDistBetweenBlobs = blob_det_params.minDistBetweenBlobs;
+    //   blob_params.filterByArea = blob_det_params.filterByArea;
+    //   blob_params.minArea = blob_det_params.minArea;
+    //   blob_params.maxArea = blob_det_params.maxArea;
+    //   blob_params.filterByCircularity = blob_det_params.filterByCircularity;
+    //   blob_params.minCircularity = blob_det_params.minCircularity;
+    //   blob_params.maxCircularity = blob_det_params.maxCircularity;
+    //   blob_params.filterByConvexity = blob_det_params.filterByConvexity;
+    //   blob_params.minConvexity = blob_det_params.minConvexity;
+    //   blob_params.maxConvexity = blob_det_params.maxConvexity;
+    //   blob_params.filterByInertia = blob_det_params.filterByInertia;
+    //   blob_params.minInertiaRatio = blob_det_params.minInertiaRatio;
+    //   blob_params.maxInertiaRatio = blob_det_params.maxInertiaRatio;
+    //   blob_det_->updateParameters(blob_params);
+    //   RCLCPP_INFO(this->getLogger(), "BlobDetector parameters updated.");
+    // }
+
+    // // Update Tracker if parameters changed
+    // if (update_tracker)
+    // {
+    //   CTracker::Params tracker_params_internal;
+    //   tracker_params_internal.dt = tracker_params.dt;
+    //   tracker_params_internal.dist_thresh = tracker_params.dist_thresh;
+    //   tracker_params_internal.max_allowed_skipped_frames = tracker_params.max_allowed_skipped_frames;
+    //   tracker_params_internal.max_trace_length = tracker_params.max_trace_length;
+    //   tracker_->updateParameters(tracker_params_internal);
+    //   RCLCPP_INFO(this->getLogger(), "Tracker parameters updated.");
+    // }
+
+    return result;
   }
 
   void CostmapToDynamicObstacles::compute()

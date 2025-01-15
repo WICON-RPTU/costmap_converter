@@ -1,14 +1,22 @@
 #include <opencv2/highgui/highgui.hpp>
-//#include <opencv2/cvv/cvv.hpp>
+// #include <opencv2/cvv/cvv.hpp>
+#include <iostream>
 #include <costmap_converter/costmap_to_dynamic_obstacles/background_subtractor.h>
 
-BackgroundSubtractor::BackgroundSubtractor(const Params &parameters): params_(parameters)
+BackgroundSubtractor::BackgroundSubtractor(const Params &parameters) : params_(parameters)
 {
 }
 
-void BackgroundSubtractor::apply(const cv::Mat& image, cv::Mat& fg_mask, int shift_x, int shift_y)
+void BackgroundSubtractor::apply(const cv::Mat &image, cv::Mat &fg_mask, int shift_x, int shift_y)
 {
   current_frame_ = image;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.alpha_slow: " << params_.alpha_slow << std::endl;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.alpha_fast: " << params_.alpha_fast << std::endl;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.min_occupancy_probability: " << params_.min_occupancy_probability << std::endl;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.beta: " << params_.beta << std::endl;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.max_occupancy_neighbors: " << params_.max_occupancy_neighbors << std::endl;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.min_sep_between_fast_and_slow_filter: " << params_.min_sep_between_fast_and_slow_filter << std::endl;
+  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.morph: " << params_.morph_size << std::endl;
 
   // occupancy grids are empty only once in the beginning -> initialize variables
   if (occupancy_grid_fast_.empty() && occupancy_grid_slow_.empty())
@@ -62,10 +70,10 @@ void BackgroundSubtractor::apply(const cv::Mat& image, cv::Mat& fg_mask, int shi
   cv::threshold(nearest_neighbor_mean_slow, nearest_neighbor_mean_slow, params_.max_occupancy_neighbors, 255, cv::THRESH_BINARY_INV);
   cv::bitwise_and(nearest_neighbor_mean_slow, fg_mask, fg_mask);
 
-  //visualize("Current frame", currentFrame_);
+  // visualize("Current frame", currentFrame_);
   cv::Mat setBorderToZero = cv::Mat(current_frame_.size(), CV_8UC1, 0.0);
   int border = 5;
-  setBorderToZero(cv::Rect(border, border, current_frame_.cols-2*border, current_frame_.rows-2*border)) = 255;
+  setBorderToZero(cv::Rect(border, border, current_frame_.cols - 2 * border, current_frame_.rows - 2 * border)) = 255;
 
   cv::bitwise_and(setBorderToZero, fg_mask, fg_mask);
 
@@ -74,7 +82,7 @@ void BackgroundSubtractor::apply(const cv::Mat& image, cv::Mat& fg_mask, int shi
 
   // Closing Operation
   cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE,
-                                              cv::Size(2*params_.morph_size + 1, 2*params_.morph_size + 1),
+                                              cv::Size(2 * params_.morph_size + 1, 2 * params_.morph_size + 1),
                                               cv::Point(params_.morph_size, params_.morph_size));
   cv::dilate(fg_mask, fg_mask, element);
   cv::dilate(fg_mask, fg_mask, element);
@@ -98,7 +106,7 @@ void BackgroundSubtractor::transformToCurrentFrame(int shift_x, int shift_y)
   occupancy_grid_slow_ = temp_slow;
 }
 
-void BackgroundSubtractor::visualize(const std::string& name, const cv::Mat& image)
+void BackgroundSubtractor::visualize(const std::string &name, const cv::Mat &image)
 {
   if (!image.empty())
   {

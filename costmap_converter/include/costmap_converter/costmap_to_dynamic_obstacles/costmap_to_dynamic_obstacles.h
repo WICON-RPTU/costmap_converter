@@ -55,8 +55,8 @@
 #include <opencv2/video/tracking.hpp>
 
 // dynamic reconfigure
-//#include <costmap_converter/CostmapToDynamicObstaclesConfig.h>
-//#include <dynamic_reconfigure/server.h>
+// #include <costmap_converter/CostmapToDynamicObstaclesConfig.h>
+// #include <dynamic_reconfigure/server.h>
 
 // Own includes
 #include <costmap_converter/costmap_to_dynamic_obstacles/multitarget_tracker/Ctracker.h>
@@ -66,146 +66,198 @@
 // STL
 #include <memory>
 
-namespace costmap_converter {
-
-/**
- * @class CostmapToDynamicObstacles
- * @brief This class converts the costmap_2d into dynamic obstacles.
- *
- * Static obstacles are treated as point obstacles.
- */
-class CostmapToDynamicObstacles : public BaseCostmapToDynamicObstacles
+namespace costmap_converter
 {
-public:
-  /**
-   * @brief Constructor
-   */
-  CostmapToDynamicObstacles();
 
   /**
-   * @brief Destructor
-   */
-  virtual ~CostmapToDynamicObstacles();
-
-  /**
-   * @brief Initialize the plugin
-   * @param nh Nodehandle that defines the namespace for parameters
-   */
-  virtual void initialize(rclcpp::Node::SharedPtr nh);
-
-  /**
-   * @brief This method performs the actual work (conversion of the costmap to
-   * obstacles)
-   */
-  virtual void compute();
-
-  /**
-   * @brief Pass a pointer to the costmap to the plugin.
-   * @sa updateCostmap2D
-   * @param costmap Pointer to the costmap2d source
-   */
-  virtual void setCostmap2D(nav2_costmap_2d::Costmap2D* costmap);
-
-  /**
-   * @brief Get updated data from the previously set Costmap2D
-   * @sa setCostmap2D
-   */
-  virtual void updateCostmap2D();
-
-  /**
-   * @brief Get a shared instance of the current obstacle container
-   * @remarks If compute() or startWorker() has not been called before, this
-   * method returns an empty instance!
-   * @return Shared instance of the current obstacle container
-   */
-  ObstacleArrayConstPtr getObstacles();
-
-  /**
-   * @brief Set name of robot's odometry topic
+   * @class CostmapToDynamicObstacles
+   * @brief This class converts the costmap_2d into dynamic obstacles.
    *
-   * @warning The method must be called before initialize()
-   *
-   * Some plugins might require odometry information
-   * to compensate the robot's ego motion
-   * @param odom_topic topic name
+   * Static obstacles are treated as point obstacles.
    */
-  virtual void setOdomTopic(const std::string& odom_topic)
+  class CostmapToDynamicObstacles : public BaseCostmapToDynamicObstacles
   {
-    odom_topic_ = odom_topic;
-  }
+  public:
+    /**
+     * @brief Constructor
+     */
+    CostmapToDynamicObstacles();
 
-  /**
-   * @brief OpenCV Visualization
-   * @param name  Id/name of the opencv window
-   * @param image Image to be visualized
-   */
-  void visualize(const std::string& name, const cv::Mat& image);
+    /**
+     * @brief Destructor
+     */
+    virtual ~CostmapToDynamicObstacles();
 
-protected:
-  /**
-   * @brief Converts the estimated velocity of a tracked object to m/s and
-   * returns it
-   * @param idx Index of the tracked object in the tracker
-   * @return Point_t, which represents velocity in [m/s] of object(idx) in x,y,z
-   * coordinates
-   */
-  Point_t getEstimatedVelocityOfObject(unsigned int idx);
+    /**
+     * @brief Initialize the plugin
+     * @param nh Nodehandle that defines the namespace for parameters
+     */
+    virtual void initialize(rclcpp::Node::SharedPtr nh);
 
-  /**
-   * @brief Gets the last observed contour of a object and converts it from [px]
-   * to [m]
-   * @param[in]  idx Index of the tracked object in the tracker
-   * @param[out] contour vector of Point_t, which represents the last observed contour in [m]
-   *             in x,y,z coordinates
-   */
-  void getContour(unsigned int idx, std::vector<Point_t>& contour);
+    /**
+     * @brief This method performs the actual work (conversion of the costmap to
+     * obstacles)
+     */
+    virtual void compute();
 
-  /**
-   * @brief Thread-safe update of the internal obstacle container (that is
-   * shared using getObstacles() from outside this
-   * class)
-   * @param obstacles Updated obstacle container
-   */
-  void updateObstacleContainer(ObstacleArrayPtr obstacles);
+    /**
+     * @brief Pass a pointer to the costmap to the plugin.
+     * @sa updateCostmap2D
+     * @param costmap Pointer to the costmap2d source
+     */
+    virtual void setCostmap2D(nav2_costmap_2d::Costmap2D *costmap);
 
-private:
-  std::mutex mutex_;
-  nav2_costmap_2d::Costmap2D* costmap_;
-  cv::Mat costmap_mat_;
-  ObstacleArrayPtr obstacles_;
-  cv::Mat fg_mask_;
-  std::unique_ptr<BackgroundSubtractor> bg_sub_;
-  cv::Ptr<BlobDetector> blob_det_;
-  std::vector<cv::KeyPoint> keypoints_;
-  std::unique_ptr<CTracker> tracker_;
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
-  Point_t ego_vel_;
+    /**
+     * @brief Get updated data from the previously set Costmap2D
+     * @sa setCostmap2D
+     */
+    virtual void updateCostmap2D();
 
-  std::string odom_topic_ = "/odom";
-  bool publish_static_obstacles_ = true;
+    /**
+     * @brief Get a shared instance of the current obstacle container
+     * @remarks If compute() or startWorker() has not been called before, this
+     * method returns an empty instance!
+     * @return Shared instance of the current obstacle container
+     */
+    ObstacleArrayConstPtr getObstacles();
 
-//  dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>*
-//      dynamic_recfg_; //!< Dynamic reconfigure server to allow config
-//                       //! modifications at runtime
+    /**
+     * @brief Set name of robot's odometry topic
+     *
+     * @warning The method must be called before initialize()
+     *
+     * Some plugins might require odometry information
+     * to compensate the robot's ego motion
+     * @param odom_topic topic name
+     */
+    virtual void setOdomTopic(const std::string &odom_topic)
+    {
+      odom_topic_ = odom_topic;
+    }
 
-  /**
-   * @brief Callback for the odometry messages of the observing robot.
-   *
-   * Used to convert the velocity of obstacles to the /map frame.
-   * @param msg The Pointer to the nav_msgs::Odometry of the observing robot
-   */
-  void odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
+    /**
+     * @brief OpenCV Visualization
+     * @param name  Id/name of the opencv window
+     * @param image Image to be visualized
+     */
+    void visualize(const std::string &name, const cv::Mat &image);
 
-  /**
-   * @brief Callback for the dynamic_reconfigure node.
-   *
-   * This callback allows to modify parameters dynamically at runtime without
-   * restarting the node
-   * @param config Reference to the dynamic reconfigure config
-   * @param level Dynamic reconfigure level
-   */
-//  void reconfigureCB(CostmapToDynamicObstaclesConfig &config, uint32_t level);
-};
+  protected:
+    /**
+     * @brief Converts the estimated velocity of a tracked object to m/s and
+     * returns it
+     * @param idx Index of the tracked object in the tracker
+     * @return Point_t, which represents velocity in [m/s] of object(idx) in x,y,z
+     * coordinates
+     */
+    Point_t getEstimatedVelocityOfObject(unsigned int idx);
+
+    /**
+     * @brief Gets the last observed contour of a object and converts it from [px]
+     * to [m]
+     * @param[in]  idx Index of the tracked object in the tracker
+     * @param[out] contour vector of Point_t, which represents the last observed contour in [m]
+     *             in x,y,z coordinates
+     */
+    void getContour(unsigned int idx, std::vector<Point_t> &contour);
+
+    /**
+     * @brief Thread-safe update of the internal obstacle container (that is
+     * shared using getObstacles() from outside this
+     * class)
+     * @param obstacles Updated obstacle container
+     */
+    void updateObstacleContainer(ObstacleArrayPtr obstacles);
+
+  private:
+    std::mutex mutex_;
+    nav2_costmap_2d::Costmap2D *costmap_;
+    cv::Mat costmap_mat_;
+    ObstacleArrayPtr obstacles_;
+    cv::Mat fg_mask_;
+    std::unique_ptr<BackgroundSubtractor> bg_sub_;
+    cv::Ptr<BlobDetector> blob_det_;
+    std::vector<cv::KeyPoint> keypoints_;
+    std::unique_ptr<CTracker> tracker_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+    Point_t ego_vel_;
+
+    std::string odom_topic_ = "/odom";
+    bool publish_static_obstacles_ = true;
+
+    //  dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>*
+    //      dynamic_recfg_; //!< Dynamic reconfigure server to allow config
+    //                       //! modifications at runtime
+
+    /**
+     * @brief Callback for the odometry messages of the observing robot.
+     *
+     * Used to convert the velocity of obstacles to the /map frame.
+     * @param msg The Pointer to the nav_msgs::Odometry of the observing robot
+     */
+    void odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
+
+    /**
+     * @brief Callback for the dynamic_reconfigure node.
+     *
+     * This callback allows to modify parameters dynamically at runtime without
+     * restarting the node
+     * @param config Reference to the dynamic reconfigure config
+     * @param level Dynamic reconfigure level
+     */
+    //  void reconfigureCB(CostmapToDynamicObstaclesConfig &config, uint32_t level);
+
+    // This will get called whenever a parameter gets updated
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle;
+    rcl_interfaces::msg::SetParametersResult parameters_callback(const std::vector<rclcpp::Parameter> &parameters);
+
+    struct parameter_set_bg_sub
+    {
+      // Background Subtractor Parameters
+      double alpha_slow; //!< Filter constant (learning rate) of the slow filter part
+      double alpha_fast; //!< Filter constant (learning rate) of the fast filter part
+      double beta;
+      double min_sep_between_fast_and_slow_filter;
+      double min_occupancy_probability;
+      double max_occupancy_neighbors;
+      int morph_size;
+    };
+    parameter_set_bg_sub bg_sub_params;
+    struct parameter_set_blob_det
+    {
+      // Blob Detector Parameters
+      bool filterByColor; //!< Filter blobs by color/intensity
+      int blobColor; //!< Color of the blob (e.g., 255 for light blobs)
+      double thresholdStep; //!< Distance between neighboring thresholds for binary image conversion
+      double minThreshold; //!< Minimum threshold for binary image conversion
+      double maxThreshold; //!< Maximum threshold for binary image conversion
+      int minRepeatability; //!< Minimum detections required for a blob to be considered real
+      double minDistBetweenBlobs; //!< Minimum distance between blob centers
+      bool filterByArea; //!< Filter blobs based on the number of pixels
+      double minArea; //!< Minimum area (in pixels) of a blob
+      double maxArea; //!< Maximum area (in pixels) of a blob
+      bool filterByCircularity; //!< Filter blobs based on circularity
+      double minCircularity; //!< Minimum circularity value (0 for a line)
+      double maxCircularity; //!< Maximum circularity value (1 for a circle)
+      bool filterByConvexity; //!< Filter blobs based on convexity
+      double minConvexity; //!< Minimum convexity ratio
+      double maxConvexity; //!< Maximum convexity ratio
+      bool filterByInertia; //!< Filter blobs based on inertia ratio
+      double minInertiaRatio; //!< Minimum inertia ratio
+      double maxInertiaRatio; //!< Maximum inertia ratio
+    };
+    parameter_set_blob_det blob_det_params;
+    struct parameter_set_tracker
+    {
+      // C Tracker Parameters
+      double dt; // time for one step of the filter
+      double dist_thresh;// distance threshold. Pairs of points with higher distance are not considered in the assignment problem
+      int max_allowed_skipped_frames; // Maximum number of frames the track is maintained without seeing the object in the measurement data
+      int max_trace_length; // Maximum trace length
+    };
+    parameter_set_tracker tracker_params;
+
+  };
 
 } // end namespace costmap_converter
 
