@@ -232,7 +232,6 @@ namespace costmap_converter
     nh->get_parameter("dynamic_obstacle_plugin.static_converter_plugin", static_converter_plugin);
     loadStaticCostmapConverterPlugin(static_converter_plugin, nh);
 
-
     // setup dynamic reconfigure
     callback_handle = nh->add_on_set_parameters_callback(std::bind(&CostmapToDynamicObstacles::parameters_callback, this, std::placeholders::_1));
 
@@ -377,7 +376,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.filter_by_color")
       {
         this->blob_det_params.filterByColor = parameter.as_bool();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -385,7 +387,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.blob_color")
       {
         this->blob_det_params.blobColor = parameter.as_int();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -393,7 +398,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.threshold_step")
       {
         this->blob_det_params.thresholdStep = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -401,7 +409,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_threshold")
       {
         this->blob_det_params.minThreshold = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -409,7 +420,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.max_threshold")
       {
         this->blob_det_params.maxThreshold = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -417,7 +431,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_repeatability")
       {
         this->blob_det_params.minRepeatability = parameter.as_int();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -425,7 +442,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_distance_between_blobs")
       {
         this->blob_det_params.minDistBetweenBlobs = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -433,7 +453,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.filter_by_area")
       {
         this->blob_det_params.filterByArea = parameter.as_bool();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -441,7 +464,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_area")
       {
         this->blob_det_params.minArea = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -449,7 +475,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.max_area")
       {
         this->blob_det_params.maxArea = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -457,7 +486,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.filter_by_circularity")
       {
         this->blob_det_params.filterByCircularity = parameter.as_bool();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -465,7 +497,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_circularity")
       {
         this->blob_det_params.minCircularity = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -473,7 +508,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.max_circularity")
       {
         this->blob_det_params.maxCircularity = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -481,7 +519,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.filter_by_convexity")
       {
         this->blob_det_params.filterByConvexity = parameter.as_bool();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -489,7 +530,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_convexity")
       {
         this->blob_det_params.minConvexity = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -497,7 +541,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.max_convexity")
       {
         this->blob_det_params.maxConvexity = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -505,7 +552,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.filter_by_inertia")
       {
         this->blob_det_params.filterByInertia = parameter.as_bool();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_bool());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -513,7 +563,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.min_inertia_ratio")
       {
         this->blob_det_params.minInertiaRatio = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -521,7 +574,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "blob_det_params.max_inertia_ratio")
       {
         this->blob_det_params.maxInertiaRatio = parameter.as_double();
-        update_blob_det = true;
+        if (!update_blob_det)
+        {
+          update_blob_det = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -531,7 +587,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "tracker_params.dt")
       {
         this->tracker_params.dt = parameter.as_double();
-        update_tracker = true;
+        if (!update_tracker)
+        {
+          update_tracker = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -539,7 +598,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "tracker_params.dist_thresh")
       {
         this->tracker_params.dist_thresh = parameter.as_double();
-        update_tracker = true;
+        if (!update_tracker)
+        {
+          update_tracker = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -547,7 +609,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "tracker_params.max_allowed_skipped_frames")
       {
         this->tracker_params.max_allowed_skipped_frames = parameter.as_int();
-        update_tracker = true;
+        if (!update_tracker)
+        {
+          update_tracker = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -555,7 +620,10 @@ namespace costmap_converter
       else if (parameter.get_name() == "tracker_params.max_trace_length")
       {
         this->tracker_params.max_trace_length = parameter.as_int();
-        update_tracker = true;
+        if (!update_tracker)
+        {
+          update_tracker = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_int());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -584,44 +652,44 @@ namespace costmap_converter
       RCLCPP_INFO(this->getLogger(), "BackgroundSubtractor parameters updated.");
     }
 
-    // // Update BlobDetector if parameters changed
-    // if (update_blob_det)
-    // {
-    //   cv::SimpleBlobDetector::Params blob_params;
-    //   blob_params.filterByColor = blob_det_params.filterByColor;
-    //   blob_params.blobColor = blob_det_params.blobColor;
-    //   blob_params.thresholdStep = blob_det_params.thresholdStep;
-    //   blob_params.minThreshold = blob_det_params.minThreshold;
-    //   blob_params.maxThreshold = blob_det_params.maxThreshold;
-    //   blob_params.minRepeatability = blob_det_params.minRepeatability;
-    //   blob_params.minDistBetweenBlobs = blob_det_params.minDistBetweenBlobs;
-    //   blob_params.filterByArea = blob_det_params.filterByArea;
-    //   blob_params.minArea = blob_det_params.minArea;
-    //   blob_params.maxArea = blob_det_params.maxArea;
-    //   blob_params.filterByCircularity = blob_det_params.filterByCircularity;
-    //   blob_params.minCircularity = blob_det_params.minCircularity;
-    //   blob_params.maxCircularity = blob_det_params.maxCircularity;
-    //   blob_params.filterByConvexity = blob_det_params.filterByConvexity;
-    //   blob_params.minConvexity = blob_det_params.minConvexity;
-    //   blob_params.maxConvexity = blob_det_params.maxConvexity;
-    //   blob_params.filterByInertia = blob_det_params.filterByInertia;
-    //   blob_params.minInertiaRatio = blob_det_params.minInertiaRatio;
-    //   blob_params.maxInertiaRatio = blob_det_params.maxInertiaRatio;
-    //   blob_det_->updateParameters(blob_params);
-    //   RCLCPP_INFO(this->getLogger(), "BlobDetector parameters updated.");
-    // }
+    // Update BlobDetector if parameters changed
+    if (update_blob_det)
+    {
+      cv::SimpleBlobDetector::Params blob_params;
+      blob_params.filterByColor = blob_det_params.filterByColor;
+      blob_params.blobColor = blob_det_params.blobColor;
+      blob_params.thresholdStep = blob_det_params.thresholdStep;
+      blob_params.minThreshold = blob_det_params.minThreshold;
+      blob_params.maxThreshold = blob_det_params.maxThreshold;
+      blob_params.minRepeatability = blob_det_params.minRepeatability;
+      blob_params.minDistBetweenBlobs = blob_det_params.minDistBetweenBlobs;
+      blob_params.filterByArea = blob_det_params.filterByArea;
+      blob_params.minArea = blob_det_params.minArea;
+      blob_params.maxArea = blob_det_params.maxArea;
+      blob_params.filterByCircularity = blob_det_params.filterByCircularity;
+      blob_params.minCircularity = blob_det_params.minCircularity;
+      blob_params.maxCircularity = blob_det_params.maxCircularity;
+      blob_params.filterByConvexity = blob_det_params.filterByConvexity;
+      blob_params.minConvexity = blob_det_params.minConvexity;
+      blob_params.maxConvexity = blob_det_params.maxConvexity;
+      blob_params.filterByInertia = blob_det_params.filterByInertia;
+      blob_params.minInertiaRatio = blob_det_params.minInertiaRatio;
+      blob_params.maxInertiaRatio = blob_det_params.maxInertiaRatio;
+      this->blob_det_->updateParameters(blob_params);
+      RCLCPP_INFO(this->getLogger(), "BlobDetector parameters updated.");
+    }
 
-    // // Update Tracker if parameters changed
-    // if (update_tracker)
-    // {
-    //   CTracker::Params tracker_params_internal;
-    //   tracker_params_internal.dt = tracker_params.dt;
-    //   tracker_params_internal.dist_thresh = tracker_params.dist_thresh;
-    //   tracker_params_internal.max_allowed_skipped_frames = tracker_params.max_allowed_skipped_frames;
-    //   tracker_params_internal.max_trace_length = tracker_params.max_trace_length;
-    //   tracker_->updateParameters(tracker_params_internal);
-    //   RCLCPP_INFO(this->getLogger(), "Tracker parameters updated.");
-    // }
+    // Update Tracker if parameters changed
+    if (update_tracker)
+    {
+      CTracker::Params tracker_params_internal;
+      tracker_params_internal.dt = tracker_params.dt;
+      tracker_params_internal.dist_thresh = tracker_params.dist_thresh;
+      tracker_params_internal.max_allowed_skipped_frames = tracker_params.max_allowed_skipped_frames;
+      tracker_params_internal.max_trace_length = tracker_params.max_trace_length;
+      this->tracker_->updateParameters(tracker_params_internal);
+      RCLCPP_INFO(this->getLogger(), "Tracker parameters updated.");
+    }
 
     return result;
   }
