@@ -60,8 +60,33 @@
 class BlobDetector : public cv::SimpleBlobDetector
 {
 public:
+  struct Params
+  {
+    // Blob Detector Parameters
+    bool filterByColor;         //!< Filter blobs by color/intensity
+    int blobColor;              //!< Color of the blob (e.g., 255 for light blobs)
+    double thresholdStep;       //!< Distance between neighboring thresholds for binary image conversion
+    double minThreshold;        //!< Minimum threshold for binary image conversion
+    double maxThreshold;        //!< Maximum threshold for binary image conversion
+    size_t minRepeatability;       //!< Minimum detections required for a blob to be considered real
+    double minDistBetweenBlobs; //!< Minimum distance between blob centers
+    bool filterByArea;          //!< Filter blobs based on the number of pixels
+    double minArea;             //!< Minimum area (in pixels) of a blob
+    double maxArea;             //!< Maximum area (in pixels) of a blob
+    bool filterByCircularity;   //!< Filter blobs based on circularity
+    double minCircularity;      //!< Minimum circularity value (0 for a line)
+    double maxCircularity;      //!< Maximum circularity value (1 for a circle)
+    bool filterByConvexity;     //!< Filter blobs based on convexity
+    double minConvexity;        //!< Minimum convexity ratio
+    double maxConvexity;        //!< Maximum convexity ratio
+    bool filterByInertia;       //!< Filter blobs based on inertia ratio
+    double minInertiaRatio;     //!< Minimum inertia ratio
+    double maxInertiaRatio;     //!< Maximum inertia ratio
+  };
+  Params blob_det_params;
+
   //! Default constructor which optionally accepts custom parameters
-  BlobDetector(const cv::SimpleBlobDetector::Params& parameters = cv::SimpleBlobDetector::Params());
+  BlobDetector(const BlobDetector::Params& parameters);
 
   //! Create shared instance of the blob detector with given parameters
   static cv::Ptr<BlobDetector> create(const BlobDetector::Params& params);
@@ -90,7 +115,7 @@ public:
   const std::vector<std::vector<cv::Point>>& getContours() { return contours_; }
 
   //! Update internal parameters
-  void updateParameters(const cv::SimpleBlobDetector::Params& parameters);
+  void updateParameters(const BlobDetector::Params& parameters);
 
 protected:
   struct Center

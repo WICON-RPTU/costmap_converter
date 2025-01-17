@@ -2,20 +2,21 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
-BlobDetector::BlobDetector(const SimpleBlobDetector::Params& parameters) : params_(parameters) {}
+BlobDetector::BlobDetector(const Params &parameters) : params_(parameters) {}
 
-cv::Ptr<BlobDetector> BlobDetector::create(const cv::SimpleBlobDetector::Params& params)
+cv::Ptr<BlobDetector> BlobDetector::create(const BlobDetector::Params &params)
 {
-  return cv::Ptr<BlobDetector> (new BlobDetector(params)); // compatibility with older versions
-  //return cv::makePtr<BlobDetector>(params);
+  return cv::Ptr<BlobDetector>(new BlobDetector(params)); // compatibility with older versions
+  // return cv::makePtr<BlobDetector>(params);
 }
 
-void BlobDetector::detect(const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints, const cv::Mat&)
+void BlobDetector::detect(const cv::Mat &image, std::vector<cv::KeyPoint> &keypoints, const cv::Mat &)
 {
   // TODO: support mask
   contours_.clear();
 
   keypoints.clear();
+
   cv::Mat grayscale_image;
   if (image.channels() == 3)
     cv::cvtColor(image, grayscale_image, cv::COLOR_BGR2GRAY);
@@ -24,7 +25,7 @@ void BlobDetector::detect(const cv::Mat& image, std::vector<cv::KeyPoint>& keypo
 
   if (grayscale_image.type() != CV_8UC1)
   {
-    //CV_Error(cv::Error::StsUnsupportedFormat, "Blob detector only supports 8-bit images!");
+    // CV_Error(cv::Error::StsUnsupportedFormat, "Blob detector only supports 8-bit images!");
     std::cerr << "Blob detector only supports 8-bit images!\n";
   }
 
@@ -90,8 +91,8 @@ void BlobDetector::detect(const cv::Mat& image, std::vector<cv::KeyPoint>& keypo
   }
 }
 
-void BlobDetector::findBlobs(const cv::Mat& image, const cv::Mat& binary_image, std::vector<Center>& centers,
-                             std::vector<std::vector<cv::Point>>& cur_contours) const
+void BlobDetector::findBlobs(const cv::Mat &image, const cv::Mat &binary_image, std::vector<Center> &centers,
+                             std::vector<std::vector<cv::Point>> &cur_contours) const
 {
   (void)image;
   centers.clear();
@@ -187,7 +188,29 @@ void BlobDetector::findBlobs(const cv::Mat& image, const cv::Mat& binary_image, 
   }
 }
 
-void BlobDetector::updateParameters(const Params& parameters)
+void BlobDetector::updateParameters(const Params &parameters)
 {
   params_ = parameters;
+
+  // Log the updated parameters
+  // std::cout << "Updating the BLOB DETECTOR parameters" << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>filterByColor: " << params_.filterByColor << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>blobColor: " << params_.blobColor << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>thresholdStep: " << params_.thresholdStep << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minThreshold: " << params_.minThreshold << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>maxThreshold: " << params_.maxThreshold << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minRepeatability: " << params_.minRepeatability << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minDistBetweenBlobs: " << params_.minDistBetweenBlobs << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>filterByArea: " << params_.filterByArea << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minArea: " << params_.minArea << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>maxArea: " << params_.maxArea << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>filterByCircularity: " << params_.filterByCircularity << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minCircularity: " << params_.minCircularity << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>maxCircularity: " << params_.maxCircularity << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>filterByConvexity: " << params_.filterByConvexity << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minConvexity: " << params_.minConvexity << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>maxConvexity: " << params_.maxConvexity << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>filterByInertia: " << params_.filterByInertia << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>minInertiaRatio: " << params_.minInertiaRatio << std::endl;
+  // std::cout << "From inside the Blob Detector cpp------------>maxInertiaRatio: " << params_.maxInertiaRatio << std::endl;
 }

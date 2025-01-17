@@ -79,6 +79,7 @@ public:
     int max_allowed_skipped_frames; // Maximum number of frames the track is maintained without seeing the object in the measurement data
     int max_trace_length; // Maximum trace length
   };
+  Params tracker_params;
 
   CTracker(const Params& parameters);
   ~CTracker(void);
@@ -90,7 +91,7 @@ public:
 
 private:
   // Aggregated parameters for the tracker object
-  Params params;
+  Params params_;
   // ID for the upcoming CTrack object
   size_t NextTrackID;
 };

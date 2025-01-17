@@ -7,14 +7,12 @@
 // Tracker. Manage tracks. Create, remove, update.
 // ---------------------------------------------------------------------------
 CTracker::CTracker(const Params &parameters)
-    : params(parameters),
+    : params_(parameters),
       NextTrackID(0)
 {
 }
-// ---------------------------------------------------------------------------
-//
-// ---------------------------------------------------------------------------
-void CTracker::Update(const std::vector<Point_t>& detectedCentroid, const std::vector< std::vector<cv::Point> >& contours)
+
+void CTracker::Update(const std::vector<Point_t> &detectedCentroid, const std::vector<std::vector<cv::Point>> &contours)
 {
   // Each contour has a centroid
   assert(detectedCentroid.size() == contours.size());
@@ -28,7 +26,7 @@ void CTracker::Update(const std::vector<Point_t>& detectedCentroid, const std::v
     for (size_t i = 0; i < detectedCentroid.size(); ++i)
     {
       tracks.push_back(
-          std::unique_ptr<CTrack>(new CTrack(detectedCentroid[i], contours[i], params.dt, NextTrackID++)));
+          std::unique_ptr<CTrack>(new CTrack(detectedCentroid[i], contours[i], params_.dt, NextTrackID++)));
     }
   }
 
@@ -64,7 +62,7 @@ void CTracker::Update(const std::vector<Point_t>& detectedCentroid, const std::v
     {
       if (assignment[i] != -1)
       {
-        if (Cost[i + assignment[i] * N] > params.dist_thresh)
+        if (Cost[i + assignment[i] * N] > params_.dist_thresh)
         {
           assignment[i] = -1;
           tracks[i]->skipped_frames = 1;
@@ -82,7 +80,7 @@ void CTracker::Update(const std::vector<Point_t>& detectedCentroid, const std::v
     // -----------------------------------
     for (int i = 0; i < static_cast<int>(tracks.size()); i++)
     {
-      if ((int)tracks[i]->skipped_frames > params.max_allowed_skipped_frames)
+      if ((int)tracks[i]->skipped_frames > params_.max_allowed_skipped_frames)
       {
         tracks.erase(tracks.begin() + i);
         assignment.erase(assignment.begin() + i);
@@ -98,7 +96,7 @@ void CTracker::Update(const std::vector<Point_t>& detectedCentroid, const std::v
   {
     if (find(assignment.begin(), assignment.end(), i) == assignment.end())
     {
-      tracks.push_back(std::unique_ptr<CTrack>(new CTrack(detectedCentroid[i], contours[i], params.dt, NextTrackID++)));
+      tracks.push_back(std::unique_ptr<CTrack>(new CTrack(detectedCentroid[i], contours[i], params_.dt, NextTrackID++)));
     }
   }
 
@@ -111,20 +109,24 @@ void CTracker::Update(const std::vector<Point_t>& detectedCentroid, const std::v
     if (assignment[i] != -1) // If we have assigned detect, then update using its coordinates,
     {
       tracks[i]->skipped_frames = 0;
-      tracks[i]->Update(detectedCentroid[assignment[i]], contours[assignment[i]], true, params.max_trace_length);
+      tracks[i]->Update(detectedCentroid[assignment[i]], contours[assignment[i]], true, params_.max_trace_length);
     }
     else // if not continue using predictions
     {
-      tracks[i]->Update(Point_t(), std::vector<cv::Point>(), false, params.max_trace_length);
+      tracks[i]->Update(Point_t(), std::vector<cv::Point>(), false, params_.max_trace_length);
     }
   }
 }
 
 void CTracker::updateParameters(const Params &parameters)
 {
-  params = parameters;
+  params_ = parameters;
+  // Log the updated parameters
+  // std::cout << "Updating the C Tracker parameters" << std::endl;
+  // std::cout << "From inside the C Tracker cpp------------>dt: " << params_.dt << std::endl;
+  // std::cout << "From inside the C Tracker cpp------------>dist_thresh: " << params_.dist_thresh << std::endl;
+  // std::cout << "From inside the C Tracker cpp------------>max_allowed_skipped_frames: " << params_.max_allowed_skipped_frames << std::endl;
+  // std::cout << "From inside the C Tracker cpp------------>max_trace_length: " << params_.max_trace_length << std::endl;
 }
-// ---------------------------------------------------------------------------
-//
-// ---------------------------------------------------------------------------
+
 CTracker::~CTracker(void) {}

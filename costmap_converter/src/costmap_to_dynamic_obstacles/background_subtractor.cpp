@@ -10,13 +10,6 @@ BackgroundSubtractor::BackgroundSubtractor(const Params &parameters) : params_(p
 void BackgroundSubtractor::apply(const cv::Mat &image, cv::Mat &fg_mask, int shift_x, int shift_y)
 {
   current_frame_ = image;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.alpha_slow: " << params_.alpha_slow << std::endl;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.alpha_fast: " << params_.alpha_fast << std::endl;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.min_occupancy_probability: " << params_.min_occupancy_probability << std::endl;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.beta: " << params_.beta << std::endl;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.max_occupancy_neighbors: " << params_.max_occupancy_neighbors << std::endl;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.min_sep_between_fast_and_slow_filter: " << params_.min_sep_between_fast_and_slow_filter << std::endl;
-  std::cout << "From inside the bg_sub cpp------------> bg_sub_params.morph: " << params_.morph_size << std::endl;
 
   // occupancy grids are empty only once in the beginning -> initialize variables
   if (occupancy_grid_fast_.empty() && occupancy_grid_slow_.empty())
@@ -120,4 +113,13 @@ void BackgroundSubtractor::visualize(const std::string &name, const cv::Mat &ima
 void BackgroundSubtractor::updateParameters(const Params &parameters)
 {
   params_ = parameters;
+  // Log the updated parameters
+  // std::cout << "Updating the BACKGROOUND DETECTOR parameters"<< std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>alpha_slow: " << params_.alpha_slow << std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>alpha_fast: " << params_.alpha_fast << std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>min_occupancy_probability: " << params_.min_occupancy_probability << std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>beta: " << params_.beta << std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>max_occupancy_neighbors: " << params_.max_occupancy_neighbors << std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>min_sep_between_fast_and_slow_filter: " << params_.min_sep_between_fast_and_slow_filter << std::endl;
+  // std::cout << "From inside the bg_sub cpp------------>morph: " << params_.morph_size << std::endl;
 }

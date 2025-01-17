@@ -14,13 +14,10 @@ namespace costmap_converter
   {
     ego_vel_.x = ego_vel_.y = ego_vel_.z = 0;
     costmap_ = nullptr;
-    //  dynamic_recfg_ = nullptr;
   }
 
   CostmapToDynamicObstacles::~CostmapToDynamicObstacles()
   {
-    //  if(dynamic_recfg_ != nullptr)
-    //    delete dynamic_recfg_;
   }
 
   void CostmapToDynamicObstacles::initialize(rclcpp::Node::SharedPtr nh)
@@ -41,27 +38,6 @@ namespace costmap_converter
     //////////////////////////////////
     // Foreground detection parameters
     BackgroundSubtractor::Params bg_sub_params;
-
-    // bg_sub_params.alpha_slow = 0.3;
-    // nh->get_parameter_or<double>("alpha_slow", bg_sub_params.alpha_slow, bg_sub_params.alpha_slow);
-
-    // bg_sub_params.alpha_fast = 0.9;
-    // nh->get_parameter_or<double>("alpha_fast", bg_sub_params.alpha_fast, bg_sub_params.alpha_fast);
-
-    // bg_sub_params.beta = 0.9;
-    // nh->get_parameter_or<double>("beta", bg_sub_params.beta, bg_sub_params.beta);
-
-    // bg_sub_params.min_occupancy_probability = 200;
-    // nh->get_parameter_or<double>("min_occupancy_probability", bg_sub_params.min_occupancy_probability, bg_sub_params.min_occupancy_probability);
-
-    // bg_sub_params.min_sep_between_fast_and_slow_filter = 80;
-    // nh->get_parameter_or<double>("min_sep_between_fast_and_slow_filter", bg_sub_params.min_sep_between_fast_and_slow_filter, bg_sub_params.min_sep_between_fast_and_slow_filter);
-
-    // bg_sub_params.max_occupancy_neighbors = 100;
-    // nh->get_parameter_or<double>("max_occupancy_neighbors", bg_sub_params.max_occupancy_neighbors, bg_sub_params.max_occupancy_neighbors);
-
-    // bg_sub_params.morph_size = 1;
-    // nh->get_parameter_or<int>("morph_size", bg_sub_params.morph_size, bg_sub_params.morph_size);
 
     nh->declare_parameter("bg_sub_params.alpha_slow", rclcpp::ParameterValue(0.3));
     nh->get_parameter("bg_sub_params.alpha_slow", bg_sub_params.alpha_slow);
@@ -89,52 +65,6 @@ namespace costmap_converter
     ////////////////////////////
     // Blob detection parameters
     BlobDetector::Params blob_det_params;
-
-    // blob_det_params.filterByColor = true; // actually filterByIntensity, always true
-    // blob_det_params.blobColor = 255;      // Extract light blobs
-    // blob_det_params.thresholdStep = 256;  // Input for blob detection is already a binary image
-    // blob_det_params.minThreshold = 127;
-    // blob_det_params.maxThreshold = 255;
-    // blob_det_params.minRepeatability = 1;
-
-    // blob_det_params.minDistBetweenBlobs = 10;
-    // nh->get_parameter_or<float>("min_distance_between_blobs", blob_det_params.minDistBetweenBlobs, blob_det_params.minDistBetweenBlobs);
-
-    // blob_det_params.filterByArea = true;
-    // nh->get_parameter_or<bool>("filter_by_area", blob_det_params.filterByArea, blob_det_params.filterByArea);
-
-    // blob_det_params.minArea = 3; // Filter out blobs with less pixels
-    // nh->get_parameter_or<float>("min_area", blob_det_params.minArea, blob_det_params.minArea);
-
-    // blob_det_params.maxArea = 300;
-    // nh->get_parameter_or<float>("max_area", blob_det_params.maxArea, blob_det_params.maxArea);
-
-    // blob_det_params.filterByCircularity = true; // circularity = 4*pi*area/perimeter^2
-    // nh->get_parameter_or<bool>("filter_by_circularity", blob_det_params.filterByCircularity, blob_det_params.filterByCircularity);
-
-    // blob_det_params.minCircularity = 0.2;
-    // nh->get_parameter_or<float>("min_circularity", blob_det_params.minCircularity, blob_det_params.minCircularity);
-
-    // blob_det_params.maxCircularity = 1; // maximal 1 (in case of a circle)
-    // nh->get_parameter_or<float>("max_circularity", blob_det_params.maxCircularity, blob_det_params.maxCircularity);
-
-    // blob_det_params.filterByInertia = true; // Filter blobs based on their elongation
-    // nh->get_parameter_or<bool>("filter_by_intertia", blob_det_params.filterByInertia, blob_det_params.filterByInertia);
-
-    // blob_det_params.minInertiaRatio = 0.2; // minimal 0 (in case of a line)
-    // nh->get_parameter_or<float>("min_inertia_ratio", blob_det_params.minInertiaRatio, blob_det_params.minInertiaRatio);
-
-    // blob_det_params.maxInertiaRatio = 1; // maximal 1 (in case of a circle)
-    // nh->get_parameter_or<float>("max_intertia_ratio", blob_det_params.maxInertiaRatio, blob_det_params.maxInertiaRatio);
-
-    // blob_det_params.filterByConvexity = false; // Area of the Blob / Area of its convex hull
-    // nh->get_parameter_or<bool>("filter_by_convexity", blob_det_params.filterByConvexity, blob_det_params.filterByConvexity);
-
-    // blob_det_params.minConvexity = 0; // minimal 0
-    // nh->get_parameter_or<float>("min_convexity", blob_det_params.minConvexity, blob_det_params.minConvexity);
-
-    // blob_det_params.maxConvexity = 1; // maximal 1
-    // nh->get_parameter_or<float>("max_convexity", blob_det_params.maxConvexity, blob_det_params.maxConvexity);
 
     nh->declare_parameter("blob_det_params.filter_by_color", rclcpp::ParameterValue(true)); // Always true, actually filterByIntensity
     nh->get_parameter("blob_det_params.filter_by_color", blob_det_params.filterByColor);
@@ -198,17 +128,6 @@ namespace costmap_converter
     ////////////////////////////////////
     // Tracking parameters
     CTracker::Params tracker_params;
-    // tracker_params.dt = 0.1;
-    // nh->get_parameter_or<float>("dt", tracker_params.dt, tracker_params.dt);
-
-    // tracker_params.dist_thresh = 15.0;
-    // nh->get_parameter_or<float>("dist_thresh", tracker_params.dist_thresh, tracker_params.dist_thresh);
-
-    // tracker_params.max_allowed_skipped_frames = 3;
-    // nh->get_parameter_or<int>("max_allowed_skipped_frames", tracker_params.max_allowed_skipped_frames, tracker_params.max_allowed_skipped_frames);
-
-    // tracker_params.max_trace_length = 10;
-    // nh->get_parameter_or<int>("max_trace_length", tracker_params.max_trace_length, tracker_params.max_trace_length);
 
     nh->declare_parameter("tracker_params.dt", rclcpp::ParameterValue(0.1));
     nh->get_parameter("tracker_params.dt", tracker_params.dt);
@@ -227,17 +146,12 @@ namespace costmap_converter
     ////////////////////////////////////
     // Static costmap conversion parameters
     std::string static_converter_plugin;
-    // nh->get_parameter_or<std::string>("static_converter_plugin", static_converter_plugin, static_converter_plugin);
     nh->declare_parameter("dynamic_obstacle_plugin.static_converter_plugin", rclcpp::ParameterValue("costmap_converter::CostmapToPolygonsDBSMCCH"));
     nh->get_parameter("dynamic_obstacle_plugin.static_converter_plugin", static_converter_plugin);
     loadStaticCostmapConverterPlugin(static_converter_plugin, nh);
 
     // setup dynamic reconfigure
     callback_handle = nh->add_on_set_parameters_callback(std::bind(&CostmapToDynamicObstacles::parameters_callback, this, std::placeholders::_1));
-
-    //  dynamic_recfg_ = new dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>(nh);
-    //  dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>::CallbackType cb = boost::bind(&CostmapToDynamicObstacles::reconfigureCB, this, _1, _2);
-    //  dynamic_recfg_->setCallback(cb);
   }
 
   rcl_interfaces::msg::SetParametersResult CostmapToDynamicObstacles::parameters_callback(const std::vector<rclcpp::Parameter> &parameters)
@@ -299,7 +213,7 @@ namespace costmap_converter
       // Background Subtractor Parameters
       else if (parameter.get_name() == "bg_sub_params.alpha_slow")
       {
-        this->bg_sub_params.alpha_slow = parameter.as_double();
+        this->bg_sub_->bg_sub_params.alpha_slow = parameter.as_double();
         update_bg_sub = true;
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
@@ -307,7 +221,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "bg_sub_params.alpha_fast")
       {
-        this->bg_sub_params.alpha_fast = parameter.as_double();
+        this->bg_sub_->bg_sub_params.alpha_fast = parameter.as_double();
         if (!update_bg_sub)
         {
           update_bg_sub = true;
@@ -318,7 +232,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "bg_sub_params.beta")
       {
-        this->bg_sub_params.beta = parameter.as_double();
+        this->bg_sub_->bg_sub_params.beta = parameter.as_double();
         if (!update_bg_sub)
         {
           update_bg_sub = true;
@@ -329,7 +243,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "bg_sub_params.min_sep_between_fast_and_slow_filter")
       {
-        this->bg_sub_params.min_sep_between_fast_and_slow_filter = parameter.as_double();
+        this->bg_sub_->bg_sub_params.min_sep_between_fast_and_slow_filter = parameter.as_double();
         if (!update_bg_sub)
         {
           update_bg_sub = true;
@@ -340,7 +254,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "bg_sub_params.min_occupancy_probability")
       {
-        this->bg_sub_params.min_occupancy_probability = parameter.as_double();
+        this->bg_sub_->bg_sub_params.min_occupancy_probability = parameter.as_double();
         if (!update_bg_sub)
         {
           update_bg_sub = true;
@@ -351,7 +265,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "bg_sub_params.max_occupancy_neighbors")
       {
-        this->bg_sub_params.max_occupancy_neighbors = parameter.as_double();
+        this->bg_sub_->bg_sub_params.max_occupancy_neighbors = parameter.as_double();
         if (!update_bg_sub)
         {
           update_bg_sub = true;
@@ -362,7 +276,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "bg_sub_params.morph_size")
       {
-        this->bg_sub_params.morph_size = parameter.as_int();
+        this->bg_sub_->bg_sub_params.morph_size = parameter.as_int();
         if (!update_bg_sub)
         {
           update_bg_sub = true;
@@ -375,7 +289,7 @@ namespace costmap_converter
       // Blob Detector Parameters
       else if (parameter.get_name() == "blob_det_params.filter_by_color")
       {
-        this->blob_det_params.filterByColor = parameter.as_bool();
+        this->blob_det_->blob_det_params.filterByColor = parameter.as_bool();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -386,7 +300,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.blob_color")
       {
-        this->blob_det_params.blobColor = parameter.as_int();
+        this->blob_det_->blob_det_params.blobColor = parameter.as_int();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -397,7 +311,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.threshold_step")
       {
-        this->blob_det_params.thresholdStep = parameter.as_double();
+        this->blob_det_->blob_det_params.thresholdStep = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -408,7 +322,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_threshold")
       {
-        this->blob_det_params.minThreshold = parameter.as_double();
+        this->blob_det_->blob_det_params.minThreshold = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -419,7 +333,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.max_threshold")
       {
-        this->blob_det_params.maxThreshold = parameter.as_double();
+        this->blob_det_->blob_det_params.maxThreshold = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -430,7 +344,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_repeatability")
       {
-        this->blob_det_params.minRepeatability = parameter.as_int();
+        this->blob_det_->blob_det_params.minRepeatability = parameter.as_int();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -441,7 +355,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_distance_between_blobs")
       {
-        this->blob_det_params.minDistBetweenBlobs = parameter.as_double();
+        this->blob_det_->blob_det_params.minDistBetweenBlobs = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -452,7 +366,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.filter_by_area")
       {
-        this->blob_det_params.filterByArea = parameter.as_bool();
+        this->blob_det_->blob_det_params.filterByArea = parameter.as_bool();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -463,7 +377,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_area")
       {
-        this->blob_det_params.minArea = parameter.as_double();
+        this->blob_det_->blob_det_params.minArea = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -474,7 +388,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.max_area")
       {
-        this->blob_det_params.maxArea = parameter.as_double();
+        this->blob_det_->blob_det_params.maxArea = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -485,7 +399,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.filter_by_circularity")
       {
-        this->blob_det_params.filterByCircularity = parameter.as_bool();
+        this->blob_det_->blob_det_params.filterByCircularity = parameter.as_bool();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -496,7 +410,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_circularity")
       {
-        this->blob_det_params.minCircularity = parameter.as_double();
+        this->blob_det_->blob_det_params.minCircularity = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -507,7 +421,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.max_circularity")
       {
-        this->blob_det_params.maxCircularity = parameter.as_double();
+        this->blob_det_->blob_det_params.maxCircularity = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -518,7 +432,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.filter_by_convexity")
       {
-        this->blob_det_params.filterByConvexity = parameter.as_bool();
+        this->blob_det_->blob_det_params.filterByConvexity = parameter.as_bool();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -529,7 +443,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_convexity")
       {
-        this->blob_det_params.minConvexity = parameter.as_double();
+        this->blob_det_->blob_det_params.minConvexity = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -540,7 +454,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.max_convexity")
       {
-        this->blob_det_params.maxConvexity = parameter.as_double();
+        this->blob_det_->blob_det_params.maxConvexity = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -551,7 +465,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.filter_by_inertia")
       {
-        this->blob_det_params.filterByInertia = parameter.as_bool();
+        this->blob_det_->blob_det_params.filterByInertia = parameter.as_bool();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -562,7 +476,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.min_inertia_ratio")
       {
-        this->blob_det_params.minInertiaRatio = parameter.as_double();
+        this->blob_det_->blob_det_params.minInertiaRatio = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -573,7 +487,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "blob_det_params.max_inertia_ratio")
       {
-        this->blob_det_params.maxInertiaRatio = parameter.as_double();
+        this->blob_det_->blob_det_params.maxInertiaRatio = parameter.as_double();
         if (!update_blob_det)
         {
           update_blob_det = true;
@@ -586,7 +500,7 @@ namespace costmap_converter
       // Tracker Parameters
       else if (parameter.get_name() == "tracker_params.dt")
       {
-        this->tracker_params.dt = parameter.as_double();
+        this->tracker_->tracker_params.dt = parameter.as_double();
         if (!update_tracker)
         {
           update_tracker = true;
@@ -597,7 +511,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "tracker_params.dist_thresh")
       {
-        this->tracker_params.dist_thresh = parameter.as_double();
+        this->tracker_->tracker_params.dist_thresh = parameter.as_double();
         if (!update_tracker)
         {
           update_tracker = true;
@@ -608,7 +522,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "tracker_params.max_allowed_skipped_frames")
       {
-        this->tracker_params.max_allowed_skipped_frames = parameter.as_int();
+        this->tracker_->tracker_params.max_allowed_skipped_frames = parameter.as_int();
         if (!update_tracker)
         {
           update_tracker = true;
@@ -619,7 +533,7 @@ namespace costmap_converter
       }
       else if (parameter.get_name() == "tracker_params.max_trace_length")
       {
-        this->tracker_params.max_trace_length = parameter.as_int();
+        this->tracker_->tracker_params.max_trace_length = parameter.as_int();
         if (!update_tracker)
         {
           update_tracker = true;
@@ -641,54 +555,54 @@ namespace costmap_converter
     if (update_bg_sub)
     {
       BackgroundSubtractor::Params bg_params;
-      bg_params.alpha_slow = this->bg_sub_params.alpha_slow;
-      bg_params.alpha_fast = this->bg_sub_params.alpha_fast;
-      bg_params.beta = this->bg_sub_params.beta;
-      bg_params.min_sep_between_fast_and_slow_filter = this->bg_sub_params.min_sep_between_fast_and_slow_filter;
-      bg_params.min_occupancy_probability = this->bg_sub_params.min_occupancy_probability;
-      bg_params.max_occupancy_neighbors = this->bg_sub_params.max_occupancy_neighbors;
-      bg_params.morph_size = this->bg_sub_params.morph_size;
+      bg_params.alpha_slow = this->bg_sub_->bg_sub_params.alpha_slow;
+      bg_params.alpha_fast = this->bg_sub_->bg_sub_params.alpha_fast;
+      bg_params.beta = this->bg_sub_->bg_sub_params.beta;
+      bg_params.min_sep_between_fast_and_slow_filter = this->bg_sub_->bg_sub_params.min_sep_between_fast_and_slow_filter;
+      bg_params.min_occupancy_probability = this->bg_sub_->bg_sub_params.min_occupancy_probability;
+      bg_params.max_occupancy_neighbors = this->bg_sub_->bg_sub_params.max_occupancy_neighbors;
+      bg_params.morph_size = this->bg_sub_->bg_sub_params.morph_size;
       this->bg_sub_->updateParameters(bg_params);
-      RCLCPP_INFO(this->getLogger(), "BackgroundSubtractor parameters updated.");
+      RCLCPP_WARN(this->getLogger(), "BackgroundSubtractor parameters updated.");
     }
 
     // Update BlobDetector if parameters changed
     if (update_blob_det)
     {
-      cv::SimpleBlobDetector::Params blob_params;
-      blob_params.filterByColor = blob_det_params.filterByColor;
-      blob_params.blobColor = blob_det_params.blobColor;
-      blob_params.thresholdStep = blob_det_params.thresholdStep;
-      blob_params.minThreshold = blob_det_params.minThreshold;
-      blob_params.maxThreshold = blob_det_params.maxThreshold;
-      blob_params.minRepeatability = blob_det_params.minRepeatability;
-      blob_params.minDistBetweenBlobs = blob_det_params.minDistBetweenBlobs;
-      blob_params.filterByArea = blob_det_params.filterByArea;
-      blob_params.minArea = blob_det_params.minArea;
-      blob_params.maxArea = blob_det_params.maxArea;
-      blob_params.filterByCircularity = blob_det_params.filterByCircularity;
-      blob_params.minCircularity = blob_det_params.minCircularity;
-      blob_params.maxCircularity = blob_det_params.maxCircularity;
-      blob_params.filterByConvexity = blob_det_params.filterByConvexity;
-      blob_params.minConvexity = blob_det_params.minConvexity;
-      blob_params.maxConvexity = blob_det_params.maxConvexity;
-      blob_params.filterByInertia = blob_det_params.filterByInertia;
-      blob_params.minInertiaRatio = blob_det_params.minInertiaRatio;
-      blob_params.maxInertiaRatio = blob_det_params.maxInertiaRatio;
+      BlobDetector::Params blob_params;
+      blob_params.filterByColor = this->blob_det_->blob_det_params.filterByColor;
+      blob_params.blobColor = this->blob_det_->blob_det_params.blobColor;
+      blob_params.thresholdStep = this->blob_det_->blob_det_params.thresholdStep;
+      blob_params.minThreshold = this->blob_det_->blob_det_params.minThreshold;
+      blob_params.maxThreshold = this->blob_det_->blob_det_params.maxThreshold;
+      blob_params.minRepeatability = this->blob_det_->blob_det_params.minRepeatability;
+      blob_params.minDistBetweenBlobs = this->blob_det_->blob_det_params.minDistBetweenBlobs;
+      blob_params.filterByArea = this->blob_det_->blob_det_params.filterByArea;
+      blob_params.minArea = this->blob_det_->blob_det_params.minArea;
+      blob_params.maxArea = this->blob_det_->blob_det_params.maxArea;
+      blob_params.filterByCircularity = this->blob_det_->blob_det_params.filterByCircularity;
+      blob_params.minCircularity = this->blob_det_->blob_det_params.minCircularity;
+      blob_params.maxCircularity = this->blob_det_->blob_det_params.maxCircularity;
+      blob_params.filterByConvexity = this->blob_det_->blob_det_params.filterByConvexity;
+      blob_params.minConvexity = this->blob_det_->blob_det_params.minConvexity;
+      blob_params.maxConvexity = this->blob_det_->blob_det_params.maxConvexity;
+      blob_params.filterByInertia = this->blob_det_->blob_det_params.filterByInertia;
+      blob_params.minInertiaRatio = this->blob_det_->blob_det_params.minInertiaRatio;
+      blob_params.maxInertiaRatio = this->blob_det_->blob_det_params.maxInertiaRatio;
       this->blob_det_->updateParameters(blob_params);
-      RCLCPP_INFO(this->getLogger(), "BlobDetector parameters updated.");
+      RCLCPP_WARN(this->getLogger(), "BlobDetector parameters updated.");
     }
 
     // Update Tracker if parameters changed
     if (update_tracker)
     {
       CTracker::Params tracker_params_internal;
-      tracker_params_internal.dt = tracker_params.dt;
-      tracker_params_internal.dist_thresh = tracker_params.dist_thresh;
-      tracker_params_internal.max_allowed_skipped_frames = tracker_params.max_allowed_skipped_frames;
-      tracker_params_internal.max_trace_length = tracker_params.max_trace_length;
+      tracker_params_internal.dt = this->tracker_->tracker_params.dt;
+      tracker_params_internal.dist_thresh = this->tracker_->tracker_params.dist_thresh;
+      tracker_params_internal.max_allowed_skipped_frames = this->tracker_->tracker_params.max_allowed_skipped_frames;
+      tracker_params_internal.max_trace_length = this->tracker_->tracker_params.max_trace_length;
       this->tracker_->updateParameters(tracker_params_internal);
-      RCLCPP_INFO(this->getLogger(), "Tracker parameters updated.");
+      RCLCPP_WARN(this->getLogger(), "Tracker parameters updated.");
     }
 
     return result;
@@ -781,7 +695,7 @@ namespace costmap_converter
 
       // Set obstacle ID
       obstacles->obstacles.back().id = tracker_->tracks.at(i)->track_id;
-      RCLCPP_WARN(getLogger(), "Estimated Tracked Object ID: %ld", tracker_->tracks.at(i)->track_id);
+      // RCLCPP_WARN(getLogger(), "Estimated Tracked Object ID: %ld", tracker_->tracks.at(i)->track_id);
 
       // Set orientation
       geometry_msgs::msg::QuaternionStamped orientation;
@@ -925,7 +839,7 @@ namespace costmap_converter
     // vel [px/s] * costmapResolution [m/px] = vel [m/s]
     Point_t vel = tracker_->tracks.at(idx)->getEstimatedVelocity() * costmap_->getResolution() + ego_vel_;
 
-    RCLCPP_WARN(getLogger(), "Estimated Tracked Object vel x: %f, vel y: %f, vel z: %f", vel.x, vel.y, vel.z);
+    // RCLCPP_WARN(getLogger(), "Estimated Tracked Object vel x: %f, vel y: %f, vel z: %f", vel.x, vel.y, vel.z);
 
     // velocity in /map frame
     return vel;
@@ -952,54 +866,6 @@ namespace costmap_converter
 
     // RCLCPP_WARN(getLogger(), "vel x: %f, vel y: %f, vel z: %f", ego_vel_.x, ego_vel_.y, ego_vel_.z);
   }
-
-  // void CostmapToDynamicObstacles::reconfigureCB(CostmapToDynamicObstaclesConfig& config, uint32_t level)
-  //{
-  //   publish_static_obstacles_ = config.publish_static_obstacles;
-
-  //  // BackgroundSubtraction Parameters
-  //  BackgroundSubtractor::Params bg_sub_params;
-  //  bg_sub_params.alpha_slow = config.alpha_slow;
-  //  bg_sub_params.alpha_fast = config.alpha_fast;
-  //  bg_sub_params.beta = config.beta;
-  //  bg_sub_params.min_sep_between_fast_and_slow_filter = config.min_sep_between_slow_and_fast_filter;
-  //  bg_sub_params.min_occupancy_probability = config.min_occupancy_probability;
-  //  bg_sub_params.max_occupancy_neighbors = config.max_occupancy_neighbors;
-  //  bg_sub_params.morph_size = config.morph_size;
-  //  bg_sub_->updateParameters(bg_sub_params);
-
-  //  // BlobDetector Parameters
-  //  BlobDetector::Params blob_det_params;
-  //  // necessary, because blobDetParams are otherwise initialized with default values for dark blobs
-  //  blob_det_params.filterByColor = true; // actually filterByIntensity, always true
-  //  blob_det_params.blobColor = 255;      // Extract light blobs
-  //  blob_det_params.thresholdStep = 256;  // Input for blobDetection is already a binary image
-  //  blob_det_params.minThreshold = 127;
-  //  blob_det_params.maxThreshold = 255;
-  //  blob_det_params.minRepeatability = 1;
-  //  blob_det_params.minDistBetweenBlobs = config.min_distance_between_blobs; // TODO: Currently not working as expected
-  //  blob_det_params.filterByArea = config.filter_by_area;
-  //  blob_det_params.minArea = config.min_area;
-  //  blob_det_params.maxArea = config.max_area;
-  //  blob_det_params.filterByCircularity = config.filter_by_circularity;
-  //  blob_det_params.minCircularity = config.min_circularity;
-  //  blob_det_params.maxCircularity = config.max_circularity;
-  //  blob_det_params.filterByInertia = config.filter_by_inertia;
-  //  blob_det_params.minInertiaRatio = config.min_inertia_ratio;
-  //  blob_det_params.maxInertiaRatio = config.max_inertia_ratio;
-  //  blob_det_params.filterByConvexity = config.filter_by_convexity;
-  //  blob_det_params.minConvexity = config.min_convexity;
-  //  blob_det_params.maxConvexity = config.max_convexity;
-  //  blob_det_->updateParameters(blob_det_params);
-
-  //  // Tracking Parameters
-  //  CTracker::Params tracking_params;
-  //  tracking_params.dt = config.dt;
-  //  tracking_params.dist_thresh = config.dist_thresh;
-  //  tracking_params.max_allowed_skipped_frames = config.max_allowed_skipped_frames;
-  //  tracking_params.max_trace_length = config.max_trace_length;
-  //  tracker_->updateParameters(tracking_params);
-  //}
 
   void CostmapToDynamicObstacles::getContour(unsigned int idx, std::vector<Point_t> &contour)
   {

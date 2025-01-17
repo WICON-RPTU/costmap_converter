@@ -210,53 +210,6 @@ namespace costmap_converter
     // This will get called whenever a parameter gets updated
     rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle;
     rcl_interfaces::msg::SetParametersResult parameters_callback(const std::vector<rclcpp::Parameter> &parameters);
-
-    struct parameter_set_bg_sub
-    {
-      // Background Subtractor Parameters
-      double alpha_slow; //!< Filter constant (learning rate) of the slow filter part
-      double alpha_fast; //!< Filter constant (learning rate) of the fast filter part
-      double beta;
-      double min_sep_between_fast_and_slow_filter;
-      double min_occupancy_probability;
-      double max_occupancy_neighbors;
-      int morph_size;
-    };
-    parameter_set_bg_sub bg_sub_params;
-    struct parameter_set_blob_det
-    {
-      // Blob Detector Parameters
-      bool filterByColor; //!< Filter blobs by color/intensity
-      int blobColor; //!< Color of the blob (e.g., 255 for light blobs)
-      double thresholdStep; //!< Distance between neighboring thresholds for binary image conversion
-      double minThreshold; //!< Minimum threshold for binary image conversion
-      double maxThreshold; //!< Maximum threshold for binary image conversion
-      int minRepeatability; //!< Minimum detections required for a blob to be considered real
-      double minDistBetweenBlobs; //!< Minimum distance between blob centers
-      bool filterByArea; //!< Filter blobs based on the number of pixels
-      double minArea; //!< Minimum area (in pixels) of a blob
-      double maxArea; //!< Maximum area (in pixels) of a blob
-      bool filterByCircularity; //!< Filter blobs based on circularity
-      double minCircularity; //!< Minimum circularity value (0 for a line)
-      double maxCircularity; //!< Maximum circularity value (1 for a circle)
-      bool filterByConvexity; //!< Filter blobs based on convexity
-      double minConvexity; //!< Minimum convexity ratio
-      double maxConvexity; //!< Maximum convexity ratio
-      bool filterByInertia; //!< Filter blobs based on inertia ratio
-      double minInertiaRatio; //!< Minimum inertia ratio
-      double maxInertiaRatio; //!< Maximum inertia ratio
-    };
-    parameter_set_blob_det blob_det_params;
-    struct parameter_set_tracker
-    {
-      // C Tracker Parameters
-      double dt; // time for one step of the filter
-      double dist_thresh;// distance threshold. Pairs of points with higher distance are not considered in the assignment problem
-      int max_allowed_skipped_frames; // Maximum number of frames the track is maintained without seeing the object in the measurement data
-      int max_trace_length; // Maximum trace length
-    };
-    parameter_set_tracker tracker_params;
-
   };
 
 } // end namespace costmap_converter

@@ -59,6 +59,7 @@ class BackgroundSubtractor
 public:
   struct Params
   {
+    // Background Subtractor Parameters
     double alpha_slow; //!< Filter constant (learning rate) of the slow filter part
     double alpha_fast; //!< Filter constant (learning rate) of the fast filter part
     double beta;
@@ -67,6 +68,7 @@ public:
     double max_occupancy_neighbors;
     int morph_size;
   };
+  Params bg_sub_params;
 
   //! Constructor that accepts a specific parameter configuration
   BackgroundSubtractor(const Params& parameters);
