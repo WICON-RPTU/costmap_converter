@@ -178,6 +178,7 @@ The `costmap_converter` package provides plugins and standalone nodes to convert
    - Launches a full TurtleBot3 simulation.
    - Integrates the `costmap_converter` plugin to showcase obstacle detection and conversion.
    - Preconfigured with parameters in the `config/standalone_converter.yaml` file.
+   - In the RViz2 window, after setting up NAV2, add a display for `costmap_polygon_markers/Marker` under the `By topic` tab to vizaulize the polygons. 
 
 2. **Integration into Existing ROS2 Launch Sequences**  
    Use this launch file to integrate the `costmap_converter` plugin into your custom ROS2 launch setup:

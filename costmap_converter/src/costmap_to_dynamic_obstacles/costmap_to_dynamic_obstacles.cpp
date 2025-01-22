@@ -571,6 +571,7 @@ namespace costmap_converter
       bg_params.morph_size = this->bg_sub_->bg_sub_params.morph_size;
       this->bg_sub_->updateParameters(bg_params);
       RCLCPP_WARN(this->getLogger(), "BackgroundSubtractor parameters updated.");
+      update_bg_sub = false;
     }
 
     // Update BlobDetector if parameters changed
@@ -598,6 +599,7 @@ namespace costmap_converter
       blob_params.maxInertiaRatio = this->blob_det_->blob_det_params.maxInertiaRatio;
       this->blob_det_->updateParameters(blob_params);
       RCLCPP_WARN(this->getLogger(), "BlobDetector parameters updated.");
+      update_blob_det = false;
     }
 
     // Update Tracker if parameters changed
@@ -610,6 +612,7 @@ namespace costmap_converter
       tracker_params_internal.max_trace_length = this->tracker_->tracker_params.max_trace_length;
       this->tracker_->updateParameters(tracker_params_internal);
       RCLCPP_WARN(this->getLogger(), "Tracker parameters updated.");
+      update_tracker = false;
     }
 
     return result;
