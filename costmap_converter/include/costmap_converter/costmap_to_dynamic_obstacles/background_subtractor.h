@@ -36,8 +36,12 @@
  * Notes:
  * The following code makes use of the OpenCV library.
  * OpenCV is licensed under the terms of the 3-clause BSD License.
+ * 
+ * Contributions:
+ * Modified and extended by Riyan Cyriac Jose at the Department of Wireless Communication and Navigation (WICON), RPTU Kaiserslautern.
+ * New features added to support dynamic parameterization for ROS2.
  *
- * Authors: Franz Albers, Christoph Rösmann
+ * Authors: Franz Albers, Christoph Rösmann, Riyan Cyriac Jose
  *********************************************************************/
 
 #ifndef BACKGROUNDSUBTRACTOR_H_
@@ -60,13 +64,13 @@ public:
   struct Params
   {
     // Background Subtractor Parameters
-    double alpha_slow; //!< Filter constant (learning rate) of the slow filter part
-    double alpha_fast; //!< Filter constant (learning rate) of the fast filter part
-    double beta;
-    double min_sep_between_fast_and_slow_filter;
-    double min_occupancy_probability;
-    double max_occupancy_neighbors;
-    int morph_size;
+    double alpha_slow; //! Slow filter learning rate
+    double alpha_fast; //! Fast filter learning rate
+    double beta; //! Weighting coefficient for pixel and neighbor mean
+    double min_sep_between_fast_and_slow_filter; //! Min separation to detect dynamics
+    double min_occupancy_probability; //! Min probability for dynamic detection
+    double max_occupancy_neighbors; //! Max mean neighbor occupancy
+    int morph_size; //! Morphological operation size
   };
   Params bg_sub_params;
 

@@ -113,13 +113,4 @@ void BackgroundSubtractor::visualize(const std::string &name, const cv::Mat &ima
 void BackgroundSubtractor::updateParameters(const Params &parameters)
 {
   params_ = parameters;
-  // Log the updated parameters
-  // std::cout << "Updating the BACKGROOUND DETECTOR parameters"<< std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>alpha_slow: " << params_.alpha_slow << std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>alpha_fast: " << params_.alpha_fast << std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>min_occupancy_probability: " << params_.min_occupancy_probability << std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>beta: " << params_.beta << std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>max_occupancy_neighbors: " << params_.max_occupancy_neighbors << std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>min_sep_between_fast_and_slow_filter: " << params_.min_sep_between_fast_and_slow_filter << std::endl;
-  // std::cout << "From inside the bg_sub cpp------------>morph: " << params_.morph_size << std::endl;
 }

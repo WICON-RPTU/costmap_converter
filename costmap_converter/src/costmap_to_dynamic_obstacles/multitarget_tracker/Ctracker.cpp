@@ -121,12 +121,6 @@ void CTracker::Update(const std::vector<Point_t> &detectedCentroid, const std::v
 void CTracker::updateParameters(const Params &parameters)
 {
   params_ = parameters;
-  // Log the updated parameters
-  // std::cout << "Updating the C Tracker parameters" << std::endl;
-  // std::cout << "From inside the C Tracker cpp------------>dt: " << params_.dt << std::endl;
-  // std::cout << "From inside the C Tracker cpp------------>dist_thresh: " << params_.dist_thresh << std::endl;
-  // std::cout << "From inside the C Tracker cpp------------>max_allowed_skipped_frames: " << params_.max_allowed_skipped_frames << std::endl;
-  // std::cout << "From inside the C Tracker cpp------------>max_trace_length: " << params_.max_trace_length << std::endl;
 }
 
 CTracker::~CTracker(void) {}

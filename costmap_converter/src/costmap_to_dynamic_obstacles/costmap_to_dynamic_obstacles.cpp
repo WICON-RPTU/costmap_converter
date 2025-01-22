@@ -154,67 +154,74 @@ namespace costmap_converter
     callback_handle = nh->add_on_set_parameters_callback(std::bind(&CostmapToDynamicObstacles::parameters_callback, this, std::placeholders::_1));
   }
 
+
   rcl_interfaces::msg::SetParametersResult CostmapToDynamicObstacles::parameters_callback(const std::vector<rclcpp::Parameter> &parameters)
   {
+    ////////////////////////////
+    // Dynamic parameter reconfiguration 
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;
     result.reason = "";
+    // Flag to decide if `updateParameters` should be called
     bool update_bg_sub = false;
     bool update_blob_det = false;
-    bool update_tracker = false; // Flag to decide if `updateParameters` should be called
+    bool update_tracker = false;
     // Set class attributes
     for (const rclcpp::Parameter &parameter : parameters)
     {
       if (parameter.get_name() == "dynamic_obstacle_plugin.static_converter_plugin")
       {
         result.successful = false;
-        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
-        RCLCPP_WARN(this->getLogger(), success_message.c_str());
-        result.reason = result.reason + std::string("\n") + success_message;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
       }
       else if (parameter.get_name() == "dynamic_obstacle_plugin.publish_static_obstacles")
       {
         result.successful = false;
-        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
-        RCLCPP_WARN(this->getLogger(), success_message.c_str());
-        result.reason = result.reason + std::string("\n") + success_message;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
       }
 
       // Static Layer Parameter
       else if (parameter.get_name() == "PolygonDBSMCCH.cluster_max_distance")
       {
         result.successful = false;
-        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
-        RCLCPP_WARN(this->getLogger(), success_message.c_str());
-        result.reason = result.reason + std::string("\n") + success_message;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
       }
       else if (parameter.get_name() == "PolygonDBSMCCH.cluster_max_pts")
       {
         result.successful = false;
-        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
-        RCLCPP_WARN(this->getLogger(), success_message.c_str());
-        result.reason = result.reason + std::string("\n") + success_message;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
       }
       else if (parameter.get_name() == "PolygonDBSMCCH.cluster_min_pts")
       {
         result.successful = false;
-        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
-        RCLCPP_WARN(this->getLogger(), success_message.c_str());
-        result.reason = result.reason + std::string("\n") + success_message;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
       }
       else if (parameter.get_name() == "PolygonDBSMCCH.convex_hull_min_pt_separation")
       {
         result.successful = false;
-        std::string success_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
-        RCLCPP_WARN(this->getLogger(), success_message.c_str());
-        result.reason = result.reason + std::string("\n") + success_message;
+        std::string failure_message = "Parameter " + parameter.get_name() + " change had not effect, as it is not advisable to change it at runtime.";
+        RCLCPP_WARN(this->getLogger(), failure_message.c_str());
+        result.reason = result.reason + std::string("\n") + failure_message;
       }
 
       // Background Subtractor Parameters
       else if (parameter.get_name() == "bg_sub_params.alpha_slow")
       {
         this->bg_sub_->bg_sub_params.alpha_slow = parameter.as_double();
-        update_bg_sub = true;
+        if (!update_bg_sub)
+        {
+          update_bg_sub = true;
+        }
         std::string success_message = "Parameter " + parameter.get_name() + " was changed to " + std::to_string(parameter.as_double());
         RCLCPP_INFO(this->getLogger(), success_message.c_str());
         result.reason = result.reason + std::string("\n") + success_message;
@@ -544,7 +551,7 @@ namespace costmap_converter
       }
 
       else
-      { // should never happen, because ROS catches non-declared parameters
+      {
         result.successful = false;
         std::string failure_message = "Parameter " + parameter.get_name() + " change was not successful. It is either not implemented or the parameter does not exist.";
         RCLCPP_WARN(this->getLogger(), failure_message.c_str());
@@ -695,7 +702,6 @@ namespace costmap_converter
 
       // Set obstacle ID
       obstacles->obstacles.back().id = tracker_->tracks.at(i)->track_id;
-      // RCLCPP_WARN(getLogger(), "Estimated Tracked Object ID: %ld", tracker_->tracks.at(i)->track_id);
 
       // Set orientation
       geometry_msgs::msg::QuaternionStamped orientation;
@@ -863,8 +869,6 @@ namespace costmap_converter
     ego_vel_.x = vel.x();
     ego_vel_.y = vel.y();
     ego_vel_.z = vel.z();
-
-    // RCLCPP_WARN(getLogger(), "vel x: %f, vel y: %f, vel z: %f", ego_vel_.x, ego_vel_.y, ego_vel_.z);
   }
 
   void CostmapToDynamicObstacles::getContour(unsigned int idx, std::vector<Point_t> &contour)

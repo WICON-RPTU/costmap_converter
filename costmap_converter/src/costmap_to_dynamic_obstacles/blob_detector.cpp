@@ -191,26 +191,4 @@ void BlobDetector::findBlobs(const cv::Mat &image, const cv::Mat &binary_image, 
 void BlobDetector::updateParameters(const Params &parameters)
 {
   params_ = parameters;
-
-  // Log the updated parameters
-  // std::cout << "Updating the BLOB DETECTOR parameters" << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>filterByColor: " << params_.filterByColor << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>blobColor: " << params_.blobColor << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>thresholdStep: " << params_.thresholdStep << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minThreshold: " << params_.minThreshold << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>maxThreshold: " << params_.maxThreshold << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minRepeatability: " << params_.minRepeatability << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minDistBetweenBlobs: " << params_.minDistBetweenBlobs << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>filterByArea: " << params_.filterByArea << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minArea: " << params_.minArea << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>maxArea: " << params_.maxArea << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>filterByCircularity: " << params_.filterByCircularity << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minCircularity: " << params_.minCircularity << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>maxCircularity: " << params_.maxCircularity << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>filterByConvexity: " << params_.filterByConvexity << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minConvexity: " << params_.minConvexity << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>maxConvexity: " << params_.maxConvexity << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>filterByInertia: " << params_.filterByInertia << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>minInertiaRatio: " << params_.minInertiaRatio << std::endl;
-  // std::cout << "From inside the Blob Detector cpp------------>maxInertiaRatio: " << params_.maxInertiaRatio << std::endl;
 }

@@ -36,8 +36,12 @@
  * Notes:
  * The following code makes use of the OpenCV library.
  * OpenCV is licensed under the terms of the 3-clause BSD License.
+ * 
+ * Contributions:
+ * Modified and extended by Riyan Cyriac Jose at the Department of Wireless Communication and Navigation (WICON), RPTU Kaiserslautern.
+ * New features added to support dynamic parameterization for ROS2.
  *
- * Authors: Franz Albers, Christoph Rösmann
+ * Authors: Franz Albers, Christoph Rösmann, Riyan Cyriac Jose
  *********************************************************************/
 
 #ifndef COSTMAP_TO_DYNAMIC_OBSTACLES_H_
@@ -53,10 +57,6 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/video/tracking.hpp>
-
-// dynamic reconfigure
-// #include <costmap_converter/CostmapToDynamicObstaclesConfig.h>
-// #include <dynamic_reconfigure/server.h>
 
 // Own includes
 #include <costmap_converter/costmap_to_dynamic_obstacles/multitarget_tracker/Ctracker.h>
@@ -185,10 +185,6 @@ namespace costmap_converter
     std::string odom_topic_ = "/odom";
     bool publish_static_obstacles_ = true;
 
-    //  dynamic_reconfigure::Server<CostmapToDynamicObstaclesConfig>*
-    //      dynamic_recfg_; //!< Dynamic reconfigure server to allow config
-    //                       //! modifications at runtime
-
     /**
      * @brief Callback for the odometry messages of the observing robot.
      *
@@ -198,17 +194,13 @@ namespace costmap_converter
     void odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
 
     /**
-     * @brief Callback for the dynamic_reconfigure node.
-     *
+     * @brief Callback for dynamically updating ROS2 parameters
      * This callback allows to modify parameters dynamically at runtime without
      * restarting the node
-     * @param config Reference to the dynamic reconfigure config
-     * @param level Dynamic reconfigure level
+     * @param parameters Vector of parameters to update
+     * @return Result of the parameter update operation
      */
-    //  void reconfigureCB(CostmapToDynamicObstaclesConfig &config, uint32_t level);
-
-    // This will get called whenever a parameter gets updated
-    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle;
+    rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle; // Parameter update callback
     rcl_interfaces::msg::SetParametersResult parameters_callback(const std::vector<rclcpp::Parameter> &parameters);
   };
 

@@ -41,29 +41,69 @@
         map_subscribe_transient_local: True
       always_send_full_costmap: True
 
-/**/intra_node:
-  ros__parameters:
-    qos_overrides:
-      /parameter_events:
-        publisher:
-          depth: 1000
-          durability: volatile
-          history: keep_last
-          reliability: reliable
-    use_sim_time: true # adatp it !!!!!
-
 /**/costmap_converter:
   ros__parameters:
-    converter_plugin: costmap_converter::CostmapToDynamicObstacles
+    converter_plugin: costmap_converter::CostmapToDynamicObstacles #costmap_converter::CostmapToPolygonsDBSMCCH
     obstacles_topic: costmap_obstacles
     occupied_min_value: 100
     odom_topic: /odom
     polygon_marker_topic: costmap_polygon_markers
-    qos_overrides:
-      /parameter_events:
-        publisher:
-          depth: 1000
-          durability: volatile
-          history: keep_last
-          reliability: reliable
-    use_sim_time: true # adatp it !!!!!
+    use_sim_time: true
+
+/**/intra_node:
+  ros__parameters:
+    # Static Layer : PolygonDBSMCCH #################
+    PolygonDBSMCCH:
+      cluster_max_distance: 0.2                   # Maximum distance to neighbors [m]
+      cluster_max_pts: 50                         # Maximum number of points that define a cluster (limit cluster size to avoid large L- and U-shapes)
+      cluster_min_pts: 5                          # Minimum number of points that define a cluster
+      convex_hull_min_pt_separation: 0.0          # Clear keypoints of the convex polygon that are close to each other [distance in meters] (0: keep all)
+
+    # Costmap Converter Dynamic Obstacle Plugin
+    dynamic_obstacle_plugin:
+      publish_static_obstacles: true
+      static_converter_plugin: costmap_converter::CostmapToPolygonsDBSMCCH
+
+    # Foreground detection
+    bg_sub_params:
+      alpha_slow: 0.9                               # Learning rate of the slow filter (Default: 0.3, Min: 0.0, Max: 1.0)
+      alpha_fast: 1.0                               # Learning rate of the fast filter (Default: 0.85, Min: 0.0, Max: 1.0)
+      beta: 0.9                                     # Weighting coefficient between a pixel's value and the mean of its nearest neighbors (Default: 0.85, Min: 0.0, Max: 1.0)
+      min_sep_between_fast_and_slow_filter: 0.1     # Minimal difference between the fast and the slow filter to recognize an obstacle as dynamic (Default: 80, Min: 0, Max: 255)
+      min_occupancy_probability: 220.0              # Minimal value of the fast filter to recognize an obstacle as dynamic (Default: 180, Min: 0, Max: 255)
+      max_occupancy_neighbors: 40.0                 # Maximal mean value of the nearest neighbors of a pixel in the slow filter (Default: 80, Min: 0, Max: 255)
+      morph_size: 6                                 # Size of the structuring element for the closing operation (Default: 1, Min: 0, Max: 10)
+
+    # Blob detection
+    blob_det_params:
+      filter_by_color: true                         # Always true to filter blobs by intensity
+      blob_color: 255                               # Extract light blobs
+      threshold_step: 256.0                         # Distance between neighboring thresholds (Default: 256.0, Min: 0.0, Max: 256.0)
+      min_threshold: 127.0                          # Minimum threshold for binary image conversion (Default: 127.0, Min: 0.0, Max: 255.0)
+      max_threshold: 255.0                          # Maximum threshold for binary image conversion (Default: 255.0, Min: 0.0, Max: 255.0)
+      min_repeatability: 1                          # Minimum number of detections to consider a blob real (Default: 1, Min: 1, Max: 10)
+      min_distance_between_blobs: 200.0             # Minimum distance between blob centers (Default: 10.0, Min: 0.0, Max: 300.0)
+      filter_by_area: true                          # Filter blobs based on number of pixels
+      min_area: 10.0                                # Minimum number of pixels a blob consists of (Default: 3.0, Min: 0.0, Max: 300.0)
+      max_area: 200.0                               # Maximum number of pixels a blob consists of (Default: 300.0, Min: 0.0, Max: 300.0)
+      filter_by_circularity: true                   # Filter blobs based on their circularity
+      min_circularity: 0.2                          # Minimum circularity value (0 in case of a line) (Default: 0.2, Min: 0.0, Max: 1.0)
+      max_circularity: 1.0                          # Maximum circularity value (1 in case of a circle) (Default: 1.0, Min: 0.0, Max: 1.0)
+      filter_by_inertia: true                       # Filter blobs based on their inertia ratio
+      min_inertia_ratio: 0.2                        # Minimum inertia ratio (Default: 0.2, Min: 0.0, Max: 1.0)
+      max_inertia_ratio: 0.8                        # Maximum inertia ratio (Default: 1.0, Min: 0.0, Max: 1.0)
+      filter_by_convexity: false                    # Filter blobs based on their convexity (Blob area / convex hull area)
+      min_convexity: 0.0                            # Minimum convexity ratio (Default: 0.0, Min: 0.0, Max: 1.0)
+      max_convexity: 1.0                            # Maximum convexity ratio (Default: 1.0, Min: 0.0, Max: 1.0)
+      
+
+    # Tracking
+    tracker_params:
+      dt: 0.1                                       # Time for one timestep of the Kalman filter (Default: 0.2, Min: 0.1, Max: 3.0)
+      dist_thresh: 150.0                            # Maximum distance between two points for assignment (Default: 20.0, Min: 0.0, Max: 150.0)
+      max_allowed_skipped_frames: 3                 # Maximum number of frames an object is tracked without being seen (Default: 3, Min: 0, Max: 10)
+      max_trace_length: 100                         # Maximum number of points in an object's trace (Default: 10, Min: 1, Max: 100)
+    
+    use_sim_time: true 
+
+
