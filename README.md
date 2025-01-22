@@ -1,7 +1,3 @@
-Here's an updated and enhanced version of the README for the `costmap_converter` package:
-
----
-
 # `costmap_converter` ROS Package
 
 The `costmap_converter` package provides plugins and nodes for converting occupied `costmap_2d` cells into primitive geometric shapes or dynamic obstacles. It is designed to enhance navigation frameworks by offering flexible costmap data processing.
@@ -53,7 +49,7 @@ Build status for the **humble-dev** branch:
 - **Improved Plugin Flexibility**: Refactored code to enhance modularity and extend support for advanced costmap conversion tasks.
 - **ROS2 Support**: Fully transitioned to ROS2 while maintaining compatibility with legacy configurations.
 - **Dynamic Parameterization**: 
-  - Enables real-time parameter adjustments for background subtraction, blob detection, and multi-target tracking.
+  - Enables real-time parameter adjustments for background subtraction, blob detection, and multi-target tracking; for Dynamic Obstacle Plugin
 
 ---
 
@@ -68,7 +64,7 @@ Ensure that you have the following installed:
 
 ### Build Instructions
 
-1. Clone the repository:
+1. Clone the repository in your **/src** folder:
 
    - Using **HTTPS**:
      ```bash
@@ -170,7 +166,7 @@ These updates enhance the flexibility and adaptability of the `costmap_converter
 
 ## Usage
 
-The `costmap_converter` package provides plugins and standalone nodes to convert costmap data into dynamic obstacles. Below are instructions for launching and integrating the package:
+The `costmap_converter` package provides plugins and standalone nodes to convert costmap data into static & dynamic obstacles. Below are instructions for launching and integrating the package:
 
 ### Launching the Nodes
 
@@ -180,7 +176,7 @@ The `costmap_converter` package provides plugins and standalone nodes to convert
    ros2 launch costmap_converter example_standalone_converter.launch.py
    ```
    - Launches a full TurtleBot3 simulation.
-   - Integrates the `costmap_converter` plugin to showcase dynamic obstacle detection and conversion.
+   - Integrates the `costmap_converter` plugin to showcase obstacle detection and conversion.
    - Preconfigured with parameters in the `config/standalone_converter.yaml` file.
 
 2. **Integration into Existing ROS2 Launch Sequences**  
