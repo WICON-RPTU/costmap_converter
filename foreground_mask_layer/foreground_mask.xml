@@ -1,0 +1,9 @@
+<!-- plugins.xml -->
+<library path="foreground_mask_layer">
+  <class type="foreground_mask::ForegroundMaskLayer" base_class_type="nav2_costmap_2d::Layer">
+    <description>
+      Publishes /foreground_mask as an OccupancyGrid and can (optionally)
+      replace the costmap with that mask.
+    </description>
+  </class>
+</library>
