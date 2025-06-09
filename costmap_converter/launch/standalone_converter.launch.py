@@ -13,7 +13,7 @@ def generate_launch_description():
     # Declare Launch Arguments
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
-        default_value='',
+        default_value='/fleet/skid_steered_two_lidars_0/',
         description='Top-level namespace')
     
     declare_params_file_cmd = DeclareLaunchArgument(
