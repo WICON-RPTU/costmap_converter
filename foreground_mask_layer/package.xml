@@ -3,8 +3,8 @@
 <package format="3">
   <name>foreground_mask_layer</name>
   <version>1.0.0</version>
-  <description>Run-time plugin for Costmap2D gradient later</description>
-  <maintainer email="alexey.merzlyakov@samsung.com">Alexey Merzlyakov</maintainer>
+  <description>Run-time plugin for Costmap2D foreground mask later</description>
+  <maintainer email="joseriyancyriac@gmail.com">Riyan Cyriac Jose</maintainer>
   <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -17,7 +17,6 @@
   <depend>rclcpp</depend>
 
   <export>
-    <costmap_2d plugin="${prefix}/gradient_layer.xml" />
     <build_type>ament_cmake</build_type>
   </export>
 </package>

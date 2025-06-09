@@ -6,8 +6,7 @@
 #include "tf2_ros/transform_listener.h"
 #include "nav_msgs/msg/occupancy_grid.hpp"
 #include "geometry_msgs/msg/point_stamped.hpp"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"   // ❶ put BEFORE you call doTransform
-
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp" // ❶ put BEFORE you call doTransform
 
 namespace foreground_mask
 {
@@ -37,6 +36,9 @@ namespace foreground_mask
         // ---------- static map copy -------------------------------------------------
         nav_msgs::msg::OccupancyGrid::SharedPtr static_map_;
         rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_sub_;
+
+        std::vector<int8_t> inflated_static_; // Inflated static map buffer
+        int inflation_radius_;
 
         // ---------- TF --------------------------------------------------------------
         std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
