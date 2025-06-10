@@ -26,12 +26,14 @@ namespace foreground_mask
                          int min_i, int min_j, int max_i, int max_j) override;
         void reset() override {}
         bool isClearable() override { return false; }
+        
 
     private:
         // ---------- parameters ------------------------------------------------------
         bool publish_mask_only_;
         bool overwrite_costmap_;
-        unsigned char mask_cost_; // value written into master costmap
+        unsigned char mask_cost_;            // value written into master costmap
+        std::string map_topic_;              // topic to subscribe to for static map
 
         // ---------- static map copy -------------------------------------------------
         nav_msgs::msg::OccupancyGrid::SharedPtr static_map_;
@@ -40,9 +42,6 @@ namespace foreground_mask
         std::vector<int8_t> inflated_static_; // Inflated static map buffer
         int inflation_radius_;
 
-        // ---------- TF --------------------------------------------------------------
-        std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
-        std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
 
         // ---------- publisher -------------------------------------------------------
         rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr mask_pub_;
@@ -50,8 +49,7 @@ namespace foreground_mask
 
         // ---------- helpers ---------------------------------------------------------
         void incomingStaticMap(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-        inline int8_t getStaticCell(int mx, int my) const;
-        void publishMask();
+
     };
 
 } // namespace foreground_mask
