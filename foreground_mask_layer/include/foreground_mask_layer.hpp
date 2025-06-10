@@ -30,9 +30,6 @@ namespace foreground_mask
 
     private:
         // ---------- parameters ------------------------------------------------------
-        bool publish_mask_only_;
-        bool overwrite_costmap_;
-        unsigned char mask_cost_;            // value written into master costmap
         std::string map_topic_;              // topic to subscribe to for static map
 
         // ---------- static map copy -------------------------------------------------

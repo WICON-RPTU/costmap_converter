@@ -20,9 +20,6 @@
         group_connectivity_type: 8
       foreground_mask_layer:
         plugin: "foreground_mask::ForegroundMaskLayer"
-        publish_mask_only: true         # also publishes /foreground_mask
-        overwrite_costmap: true         # keep original costs
-        mask_cost_value: 255            # Set the costmap value for occupied cells (LETHAL_OBSTACLE = 255)
         map_topic: "/map"
         inflation_radius: 5            #Inflate the static map region by this radius
       inflation_layer:

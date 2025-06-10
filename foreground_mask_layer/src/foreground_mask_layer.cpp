@@ -14,17 +14,15 @@ namespace foreground_mask
 
         // Declare plugin parameters
         declareParameter("enabled", rclcpp::ParameterValue(true));
-        declareParameter("mask_cost_value", rclcpp::ParameterValue(255));
         declareParameter("map_topic", rclcpp::ParameterValue(std::string("/map")));
         declareParameter("inflation_radius", rclcpp::ParameterValue(8)); // Default inflation radius
 
         node->get_parameter(name_ + "." + "enabled", enabled_);
-        node->get_parameter(name_ + "." + "mask_cost_value", mask_cost_);
         node->get_parameter(name_ + "." + "map_topic", map_topic_);
         node->get_parameter(name_ + "." + "inflation_radius", inflation_radius_);
 
-        RCLCPP_INFO(node->get_logger(), "ForegroundMaskLayer initialized with mask_cost_value=%u, map_topic=%s, inflation_radius=%d",
-                    mask_cost_, map_topic_.c_str(), inflation_radius_);
+        RCLCPP_INFO(node->get_logger(), "ForegroundMaskLayer initialized with map_topic=%s, inflation_radius=%d",
+                    map_topic_.c_str(), inflation_radius_);
 
         // Subscribe to the static map
         map_sub_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
@@ -120,7 +118,7 @@ namespace foreground_mask
                     // Comparison logic: foreground detection
                     if (master_val >= 90 && inflated_val < 50) // Detected as dynamic obstacle
                     {
-                        master_array[index] = mask_cost_; // Mark as foreground obstacle
+                        master_array[index] = nav2_costmap_2d::LETHAL_OBSTACLE; // Mark as foreground obstacle
                     }
                     else
                     {
