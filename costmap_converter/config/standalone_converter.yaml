@@ -4,7 +4,7 @@
       update_frequency: 60.0
       publish_frequency: 30.0
       global_frame: odom
-      robot_base_frame: base_footprint
+      robot_base_frame: base_link
       use_sim_time: true
       rolling_window: true
       width: 20
@@ -12,7 +12,7 @@
       resolution: 0.05
       robot_radius: 1.0
       # plugins: ["static_layer", "inflation_layer", obstacle_layer, foreground_mask_layer]
-      plugins: ["obstacle_layer",  "denoise_layer", "foreground_mask_layer"]
+      plugins: ["obstacle_layer", "inflation_layer", "foreground_mask_layer"]
       denoise_layer:
         plugin: "nav2_costmap_2d::DenoiseLayer"
         enabled: true
@@ -23,12 +23,12 @@
         publish_mask_only: true         # also publishes /foreground_mask
         overwrite_costmap: true         # keep original costs
         mask_cost_value: 255            # Set the costmap value for occupied cells (LETHAL_OBSTACLE = 255)
-        map_topic: "/fleet/skid_steered_two_lidars_0/map"
-        inflation_radius: 10            #Inflate the static map region by this radius
+        map_topic: "/map"
+        inflation_radius: 5            #Inflate the static map region by this radius
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 5.0
-        inflation_radius: 0.1
+        inflation_radius: 0.05
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -37,7 +37,7 @@
         max_obstacle_height: 2.0
         combination_method: 1
         scan:
-          topic: /fleet/skid_steered_two_lidars_0/scan
+          topic: /scan
           raytrace_max_range: 15.0
           raytrace_min_range: 0.0
           obstacle_max_range: 14.5
@@ -55,10 +55,11 @@
 
 /**/costmap_converter:
   ros__parameters:
-    converter_plugin: costmap_converter::CostmapToDynamicObstacles #costmap_converter::CostmapToPolygonsDBSMCCH
+    # converter_plugin: costmap_converter::CostmapToDynamicObstacles
+    converter_plugin:  costmap_converter::CostmapToPolygonsDBSMCCH
     obstacles_topic: costmap_obstacles
-    occupied_min_value: 90    # Minimum occupancy value to consider a cell as occupied (adjusted for mask values)
-    odom_topic: /fleet/skid_steered_two_lidars_0/odometry/filtered
+    occupied_min_value: 60    # Minimum occupancy value to consider a cell as occupied (adjusted for mask values)
+    odom_topic: odom
     polygon_marker_topic: costmap_polygon_markers
     use_sim_time: true
 
