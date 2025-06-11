@@ -6,6 +6,7 @@ namespace foreground_mask
 
     void ForegroundMaskLayer::onInitialize()
     {
+        ObstacleLayer::onInitialize();
         auto node = node_.lock();
         if (!node)
         {
@@ -30,7 +31,9 @@ namespace foreground_mask
             rclcpp::QoS(1).transient_local().reliable(),
             std::bind(&ForegroundMaskLayer::incomingStaticMap, this, std::placeholders::_1));
 
+        matchSize();
         current_ = true;
+        enabled_ = true;
     }
 
     void ForegroundMaskLayer::incomingStaticMap(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
@@ -70,41 +73,56 @@ namespace foreground_mask
         RCLCPP_INFO(logger_, "Static map inflated.");
     }
 
-    void ForegroundMaskLayer::updateBounds(double /*robot_x*/, double /*robot_y*/, double /*robot_yaw*/,
-                                           double *min_x, double *min_y, double *max_x, double *max_y)
-    {
-        if (!enabled_)
-            return;
+    // void ForegroundMaskLayer::updateBounds(double robot_x, double robot_y, double /*robot_yaw*/,
+    //                                        double *min_x, double *min_y,
+    //                                        double *max_x, double *max_y)
+    // {
+    //     if (!enabled_ || !static_map_)
+    //     {
+    //         return;
+    //     }
 
-        *min_x = -std::numeric_limits<float>::max();
-        *min_y = -std::numeric_limits<float>::max();
-        *max_x = std::numeric_limits<float>::max();
-        *max_y = std::numeric_limits<float>::max();
-    }
+    //     std::lock_guard<Costmap2D::mutex_t> lock(*getMutex());
+
+    //     if (layered_costmap_->isRolling())
+    //     {
+    //         updateOrigin(robot_x - getSizeInMetersX() / 2.0,
+    //                      robot_y - getSizeInMetersY() / 2.0);
+    //     }
+
+    //     layer_min_x = getOriginX();
+    //     layer_min_y = getOriginY();
+    //     layer_max_x = layer_min_x + getSizeInMetersX();
+    //     layer_max_y = layer_min_y + getSizeInMetersY();
+
+    //     *min_x = std::min(*min_x, layer_min_x);
+    //     *min_y = std::min(*min_y, layer_min_y);
+    //     *max_x = std::max(*max_x, layer_max_x);
+    //     *max_y = std::max(*max_y, layer_max_y);
+
+    //     useExtraBounds(min_x, min_y, max_x, max_y);
+    // }
 
     void ForegroundMaskLayer::updateCosts(nav2_costmap_2d::Costmap2D &master_grid,
                                           int min_i, int min_j, int max_i, int max_j)
     {
+        ObstacleLayer::updateCosts(master_grid, min_i, min_j, max_i, max_j);
+        
         if (!enabled_ || !static_map_)
         {
             RCLCPP_WARN(logger_, "ForegroundMaskLayer is disabled or static map not available.");
             return;
         }
 
-        unsigned char *master_array = master_grid.getCharMap();
-
-        // Iterate over the costmap bounds
         for (int j = min_j; j < max_j; ++j)
         {
             for (int i = min_i; i < max_i; ++i)
             {
                 unsigned int index = master_grid.getIndex(i, j);
 
-                // Transform the costmap cell to the static map frame directly
                 double wx, wy;
                 master_grid.mapToWorld(i, j, wx, wy);
 
-                // Convert world coordinates to static map indices
                 unsigned int mx = static_cast<unsigned int>((wx - static_map_->info.origin.position.x) / static_map_->info.resolution);
                 unsigned int my = static_cast<unsigned int>((wy - static_map_->info.origin.position.y) / static_map_->info.resolution);
 
@@ -113,27 +131,93 @@ namespace foreground_mask
                     unsigned int inflated_idx = mx + my * static_map_->info.width;
 
                     unsigned char inflated_val = inflated_static_[inflated_idx];
-                    unsigned char master_val = master_array[index];
+                    unsigned char master_val = master_grid.getCost(index);
 
                     // Comparison logic: foreground detection
                     if (master_val >= 90 && inflated_val < 50) // Detected as dynamic obstacle
                     {
-                        master_array[index] = nav2_costmap_2d::LETHAL_OBSTACLE; // Mark as foreground obstacle
+                        master_grid.setCost(i, j, nav2_costmap_2d::LETHAL_OBSTACLE); // Mark as foreground obstacle
                     }
                     else
                     {
-                        master_array[index] = nav2_costmap_2d::FREE_SPACE; // Clear static/background data
+                        master_grid.setCost(i, j, nav2_costmap_2d::FREE_SPACE); // Clear static/background data
                     }
                 }
                 else
                 {
-                    master_array[index] = nav2_costmap_2d::FREE_SPACE; // Out of bounds, mark as unknown
+                    master_grid.setCost(i, j, nav2_costmap_2d::FREE_SPACE); // Out of bounds, mark as unknown
                 }
             }
         }
 
         current_ = true;
     }
+
+    // void ForegroundMaskLayer::updateCosts(nav2_costmap_2d::Costmap2D &master_grid,
+    //                                       int min_i, int min_j, int max_i, int max_j)
+    // {
+    //     //------------------------------------------------------------------
+    //     // 1.  Run the parent implementation.  This will:
+    //     //     • copy the master_grid into our local costmap_
+    //     //     • ray-trace clearing observations
+    //     //     • mark lethal hits from the sensors
+    //     //------------------------------------------------------------------
+    //     ObstacleLayer::updateCosts(master_grid, min_i, min_j, max_i, max_j);
+
+    //     //------------------------------------------------------------------
+    //     // 2.  Our foreground logic: inspect every cell that MAY have changed
+    //     //------------------------------------------------------------------
+    //     if (!enabled_ || !static_map_)
+    //     {
+    //         return; // nothing to overwrite
+    //     }
+
+    //     for (int j = min_j; j < max_j; ++j)
+    //     {
+    //         for (int i = min_i; i < max_i; ++i)
+    //         {
+    //             //----------------------------------------------------------------
+    //             // 2.1  We only care about cells that the parent marked lethal.
+    //             //----------------------------------------------------------------
+    //             unsigned char c = master_grid.getCost(i, j);
+    //             if (c < nav2_costmap_2d::LETHAL_OBSTACLE)
+    //                 continue; // leave FREE/INSCRATCH/NO_INFO alone
+
+    //             //----------------------------------------------------------------
+    //             // 2.2  Convert (i,j) to static-map indices
+    //             //----------------------------------------------------------------
+    //             double wx, wy;
+    //             master_grid.mapToWorld(i, j, wx, wy);
+
+    //             const auto &info = static_map_->info;
+    //             int mx = static_cast<int>((wx - info.origin.position.x) / info.resolution);
+    //             int my = static_cast<int>((wy - info.origin.position.y) / info.resolution);
+
+    //             if (mx < 0 || my < 0 || mx >= static_cast<int>(info.width) ||
+    //                 my >= static_cast<int>(info.height))
+    //             {
+    //                 continue; // outside static map – keep the mark
+    //             }
+
+    //             //----------------------------------------------------------------
+    //             // 2.3  Compare with inflated static background
+    //             //----------------------------------------------------------------
+    //             unsigned int sidx = mx + my * info.width;
+    //             unsigned char background = inflated_static_[sidx];
+
+    //             // *** Your foreground criterion ***
+    //             //   - keep the lethal mark only if the static map says "free"
+    //             //   - otherwise restore whatever was there before (usually a low cost)
+    //             if (background < 50)
+    //             {                               // cell is free in static map
+    //                 master_grid.setCost(i, j, nav2_costmap_2d::FREE_SPACE); // wipe dynamic artefact
+    //             }
+    //             // else: leave as LETHAL_OBSTACLE
+    //         }
+    //     }
+
+    //     current_ = true;
+    // }
 
 } // namespace foreground_mask
 
