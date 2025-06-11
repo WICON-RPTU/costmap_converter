@@ -71,7 +71,7 @@ void BackgroundSubtractor::apply(const cv::Mat &image, cv::Mat &fg_mask, int shi
   cv::bitwise_and(setBorderToZero, fg_mask, fg_mask);
 
   // cv::imwrite("/home/albers/Desktop/currentFrame.png", currentFrame_);
-  // visualize("Foreground mask", fgMask);
+  // visualize("Foreground mask", fg_mask);
 
   // Closing Operation
   cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE,
@@ -97,6 +97,9 @@ void BackgroundSubtractor::transformToCurrentFrame(int shift_x, int shift_y)
 
   occupancy_grid_fast_ = temp_fast;
   occupancy_grid_slow_ = temp_slow;
+
+  // visualize("Fast occupancy grid", occupancy_grid_fast_);
+  // visualize("Slow occupancy grid", occupancy_grid_slow_);
 }
 
 void BackgroundSubtractor::visualize(const std::string &name, const cv::Mat &image)
