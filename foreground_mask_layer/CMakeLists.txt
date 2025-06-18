@@ -46,10 +46,23 @@ add_library(foreground_mask_layer SHARED
 )
 include_directories(include)
 
+add_executable(dynamic_obstacle_node src/odpp_node.cpp)
+ament_target_dependencies(dynamic_obstacle_node ${dep_pkgs})
+
 # === Installation ===
 
 install(TARGETS ${lib_name}
         DESTINATION lib)
+
+install(TARGETS dynamic_obstacle_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install required directories (e.g. launch, config)
+install(DIRECTORY 
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 # === Ament work ===
 
